@@ -4,6 +4,12 @@
   "description": "Web Components Router",
   "main": "router.js",
   "type": "module",
+  "files": [
+    "lib/",
+    "*.js",
+    "package.json",
+    "README.md"
+  ],
   "scripts": {
     "test": "karma start test/karma.config.cjs --single-run"
   },
