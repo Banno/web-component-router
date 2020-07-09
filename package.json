@@ -1,0 +1,32 @@
+{
+  "name": "@jack-henry/web-component-router",
+  "version": "1.0.0",
+  "description": "Web Components Router",
+  "main": "router.js",
+  "type": "module",
+  "scripts": {
+    "test": "karma start test/karma.config.cjs --single-run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Banno/web-component-router.git"
+  },
+  "author": "Chad Killingsworth <chad.killingsworth@banno.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/Banno/web-component-router/issues"
+  },
+  "homepage": "https://github.com/Banno/web-component-router",
+  "dependencies": {
+    "page": "1.7.x",
+    "qs": "^6.4.0"
+  },
+  "devDependencies": {
+    "@polymer/polymer": "^3.4.1",
+    "jasmine-core": "^3.5.0",
+    "karma": "^5.1.0",
+    "karma-chrome-launcher": "^3.1.0",
+    "karma-jasmine": "^3.3.1",
+    "karma-spec-reporter": "^0.0.32"
+  }
+}
