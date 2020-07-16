@@ -74,7 +74,9 @@ class Router {
       this.nextStateWasPopped = true;
     }, true);
 
+    /** @type {!Set<!function()>} */
     this.routeChangeStartCallbacks_ = new Set();
+    /** @type {!Set<!function(!Error=)>} */
     this.routeChangeCompleteCallbacks_ = new Set();
   }
 
@@ -203,22 +205,22 @@ class Router {
     pageJs(route, callback);
   }
 
-  /** @param {!Function} callback */
+  /** @param {!function()} callback */
   addRouteChangeStartCallback(callback) {
     this.routeChangeStartCallbacks_.add(callback);
   }
 
-  /** @param {!Function} callback */
+  /** @param {!function()} callback */
   removeRouteChangeStartCallback(callback) {
     this.routeChangeStartCallbacks_.delete(callback);
   }
 
-  /** @param {!Function} callback */
+  /** @param {!function(!Error=)} callback */
   addRouteChangeCompleteCallback(callback) {
     this.routeChangeCompleteCallbacks_.add(callback);
   }
 
-  /** @param {!Function} callback */
+  /** @param {!function(!Error=)} callback */
   removeRouteChangeCompleteCallback(callback) {
     this.routeChangeCompleteCallbacks_.delete(callback);
   }
@@ -359,10 +361,16 @@ class Router {
     this.routeChangeStartCallbacks_.forEach((cb) => cb());
     this.prevNodeId_ = this.currentNodeId_;
     this.currentNodeId_ = routeTreeNode.getKey();
-    await routeTreeNode.activate(this.prevNodeId, context);
+    /** @type {!Error|undefined} */
+    let routeError;
+    try {
+      await routeTreeNode.activate(this.prevNodeId, context);
+    } catch (err) {
+      routeError = err;
+    }
     next();
     this.nextStateWasPopped = false;
-    this.routeChangeCompleteCallbacks_.forEach((cb) => cb());
+    this.routeChangeCompleteCallbacks_.forEach((cb) => cb(routeError));
   }
 
   /**

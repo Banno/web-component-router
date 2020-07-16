@@ -13,9 +13,9 @@ const BasicRoutingInterface = class {
    * @param {!RouteTreeNode|undefined} nextNodeIfExists
    * @param {string} routeId
    * @param {!Context} context
-   * @param {function(boolean=)} next
+   * @return {!Promise<boolean|undefined>}
    */
-  routeEnter(currentNode, nextNodeIfExists, routeId, context, next) { }
+  async routeEnter(currentNode, nextNodeIfExists, routeId, context) { }
 
   /**
    * Default implementation for the callback on exiting a route node.
@@ -25,9 +25,9 @@ const BasicRoutingInterface = class {
    * @param {!RouteTreeNode|undefined} nextNode
    * @param {string} routeId
    * @param {!Context} context
-   * @param {function(boolean=)} next
+   * @return {!Promise<undefined>}
    */
-  routeExit(currentNode, nextNode, routeId, context, next) { }
+  async routeExit(currentNode, nextNode, routeId, context) { }
 };
 
 /**
@@ -50,7 +50,7 @@ function routingMixin(Superclass) {
      * @param {!RouteTreeNode|undefined} nextNodeIfExists
      * @param {string} routeId
      * @param {!Context} context
-     * @return {!Promise<undefined>}
+     * @return {!Promise<boolean|undefined>}
      */
     async routeEnter(currentNode, nextNodeIfExists, routeId, context) {
       context.handled = true;

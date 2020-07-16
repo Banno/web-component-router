@@ -46,7 +46,7 @@ function animatedRoutingMixin(Superclass, className) {
       };
       currentElement.addEventListener('transitionend', animationEnd, false);
       currentElement.classList.add(className);
-      return super.routeEnter(currentNode, nextNodeIfExists, routeId, context, next);
+      return super.routeEnter(currentNode, nextNodeIfExists, routeId, context);
     }
 
     /**
