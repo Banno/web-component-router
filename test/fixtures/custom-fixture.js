@@ -1,6 +1,6 @@
 import {PolymerElement, html} from '@polymer/polymer/polymer-element.js';
-import {default as routingMixin, BasicRoutingInterface} from '../../routing-mixin.js';
-
+import {default as routingMixin} from '../../routing-mixin.js';
+import { BasicRoutingInterface } from '../../routing-interface.js';
 /**
  * @constructor
  * @extends {PolymerElement}
