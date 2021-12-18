@@ -26,4 +26,4 @@ const BasicRoutingInterface = class {
   async routeExit(currentNode, nextNode, routeId, context) { }
 };
 
-export {BasicRoutingInterface};
+export {BasicRoutingInterface as default};

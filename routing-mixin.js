@@ -1,7 +1,7 @@
 import RouteTreeNode from './lib/route-tree-node.js';
 import RouteData from './lib/route-data.js';
 import page from 'page';
-import { BasicRoutingInterface } from './routing-interface.js';
+import BasicRoutingInterface from './routing-interface.js';
 const Context = page.Context;
 
 /**
@@ -114,4 +114,5 @@ function routingMixin(Superclass) {
   return BasicRouting;
 }
 
-export { routingMixin as default };
+//exporting BasicRoutingInterface for backward compatibility - don't break consumer imports
+export { routingMixin as default, BasicRoutingInterface };
