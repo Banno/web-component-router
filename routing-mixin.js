@@ -1,34 +1,8 @@
 import RouteTreeNode from './lib/route-tree-node.js';
 import RouteData from './lib/route-data.js';
 import page from 'page';
+import BasicRoutingInterface from './routing-interface.js';
 const Context = page.Context;
-
-/** @interface */
-const BasicRoutingInterface = class {
-  /**
-   * Default implementation for the callback on entering a route node.
-   * This will only be used if an element does not define it's own routeEnter method.
-   *
-   * @param {!RouteTreeNode} currentNode
-   * @param {!RouteTreeNode|undefined} nextNodeIfExists
-   * @param {string} routeId
-   * @param {!Context} context
-   * @return {!Promise<boolean|undefined>}
-   */
-  async routeEnter(currentNode, nextNodeIfExists, routeId, context) { }
-
-  /**
-   * Default implementation for the callback on exiting a route node.
-   * This will only be used if an element does not define it's own routeExit method.
-   *
-   * @param {!RouteTreeNode} currentNode
-   * @param {!RouteTreeNode|undefined} nextNode
-   * @param {string} routeId
-   * @param {!Context} context
-   * @return {!Promise<undefined>}
-   */
-  async routeExit(currentNode, nextNode, routeId, context) { }
-};
 
 /**
  * @param {function(new:HTMLElement)} Superclass
@@ -140,4 +114,5 @@ function routingMixin(Superclass) {
   return BasicRouting;
 }
 
-export { BasicRoutingInterface, routingMixin as default };
+//exporting BasicRoutingInterface for backward compatibility - don't break consumer imports
+export { routingMixin as default, BasicRoutingInterface };

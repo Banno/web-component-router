@@ -1,7 +1,8 @@
 import RouteTreeNode from './lib/route-tree-node.js';
 import page from 'page';
 const Context = page.Context;
-import {default as basicRoutingMixin, BasicRoutingInterface} from './routing-mixin.js';
+import basicRoutingMixin from './routing-mixin.js';
+import BasicRoutingInterface from './routing-interface.js';
 
 /**
  * @param {function(new:HTMLElement)} Superclass
@@ -21,7 +22,7 @@ function animatedRoutingMixin(Superclass, className) {
    * @mixinClass
    * @polymer
    * @extends {BasicRoutingElement}
-   * @implements {basicRoutingMixin.Type}
+   * @implements {BasicRoutingInterface}
    */
   class AnimatedRouting extends BasicRoutingElement {
     connectedCallback() {
