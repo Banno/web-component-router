@@ -1,8 +1,7 @@
 import RouteTreeNode from './lib/route-tree-node.js';
 import RouteData from './lib/route-data.js';
-import page from 'page';
+import {Context} from './lib/page.js';
 import BasicRoutingInterface from './routing-interface.js';
-const Context = page.Context;
 
 /**
  * @param {function(new:HTMLElement)} Superclass

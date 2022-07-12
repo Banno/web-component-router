@@ -24,8 +24,7 @@
   },
   "homepage": "https://github.com/Banno/web-component-router",
   "dependencies": {
-    "path-to-regexp": "~1.2.1",
-    "qs": "6.5.0"
+    "path-to-regexp": "^6.2.1"
   },
   "devDependencies": {
     "@polymer/polymer": "^3.4.1",

@@ -11,7 +11,7 @@
  */
 
 import testRouteTree from './utils/testing-route-setup.js';
-import pageJs from 'page';
+import {Context, page} from '../lib/page.js';
 import Router from '../router.js';
 import RouteTreeNode from '../lib/route-tree-node.js';
 import RoutedElement from './fixtures/custom-fixture.js';
@@ -30,7 +30,7 @@ describe('Router', () => {
   /** @type {!Function} */
   let newRouteChangeCallback;
 
-  const startPropertyName = JSCompiler_renameProperty('start', pageJs);
+  const startPropertyName = JSCompiler_renameProperty('start', page);
 
   beforeAll(() => {
     // reset router
@@ -43,7 +43,7 @@ describe('Router', () => {
       }
     }).bind(router);
 
-    pageJs('*', (context, next) => {
+    page('*', (context, next) => {
       context.handled = true; // prevents actually leaving the page
       next();
     });
@@ -55,18 +55,18 @@ describe('Router', () => {
   });
 
   beforeEach(() => {
-    spyOn(pageJs, startPropertyName);
+    spyOn(page, startPropertyName).and.callThrough();
   });
 
   it('.start should register routes and start routing', () => {
-    const initialCallbackLength = pageJs.callbacks.length;
+    const initialCallbackLength = page.callbacks.length;
     const builtinCallbackLength = 1;
 
     router.start();
-    // PageJs should be called to register routes ROOT, B, C, D, E.
+    // page should be called to register routes ROOT, B, C, D, E.
     // A should NOT be registered as it is abstract (has a zero length path).
-    expect(pageJs.callbacks.length).toBe(5 + initialCallbackLength + builtinCallbackLength);
-    expect(pageJs.start).toHaveBeenCalled();
+    expect(page.callbacks.length).toBe(5 + initialCallbackLength + builtinCallbackLength);
+    expect(page.start).toHaveBeenCalled();
   });
 
   it('should not have a previous route id initially', () => {
@@ -144,12 +144,12 @@ describe('Router', () => {
 
   describe('go()', () => {
     beforeEach(() => {
-      spyOn(pageJs, JSCompiler_renameProperty('show', pageJs));
+      spyOn(page, JSCompiler_renameProperty('show', page));
     });
 
     it('should navigate to the given path', () => {
       router.go('/A');
-      expect(pageJs.show).toHaveBeenCalledWith('/A');
+      expect(page.show).toHaveBeenCalledWith('/A');
     });
 
     it('should replace path parameters with given values', () => {
@@ -157,18 +157,18 @@ describe('Router', () => {
         'accountId': '1234',
         'docId': '6789',
       });
-      expect(pageJs.show).toHaveBeenCalledWith('/account/1234/documents/6789');
+      expect(page.show).toHaveBeenCalledWith('/account/1234/documents/6789');
     });
   });
 
   describe('query context', () => {
     afterEach(() => {
       // Remove the callback added in the test.
-      pageJs.callbacks.pop();
+      page.callbacks.pop();
     });
 
     it('should be an empty object if there are no query parameters', (done) => {
-      pageJs('/test', (context, next) => {
+      page('/test', (context, next) => {
         expect(context.query).toEqual({});
         done();
       });
@@ -176,7 +176,7 @@ describe('Router', () => {
     });
 
     it('should have properties that match the query parameters', (done) => {
-      pageJs('/test', (context, next) => {
+      page('/test', (context, next) => {
         expect(context.query['foo']).toBe('bar');
         expect(context.query['noValue']).toBe('');
         done();
@@ -187,7 +187,7 @@ describe('Router', () => {
 
   describe('routeEnter', () => {
     it('should create the next element when it does not exist', async () => {
-      const context = new pageJs.Context('/B/somedata');
+      const context = new Context('/B/somedata');
       context.params['bData'] = 'somedata';
       A.getValue().element = document.createElement(testRouteTree.Id.A);
       B.getValue().element = undefined;
@@ -196,7 +196,7 @@ describe('Router', () => {
     });
 
     it('registered attributes should be assigned as hyphenated properties', async () => {
-      const context = new pageJs.Context('/B/somedata');
+      const context = new Context('/B/somedata');
       context.params['bData'] = 'somedata';
       A.getValue().element = document.createElement(testRouteTree.Id.A);
       B.getValue().element = undefined;
@@ -205,7 +205,7 @@ describe('Router', () => {
     });
 
     it('undefined routing properties should clear associated attribute', async () => {
-      const context = new pageJs.Context('/B/somedata');
+      const context = new Context('/B/somedata');
       context.params['bData'] = undefined;
       A.getValue().element = document.createElement(testRouteTree.Id.A);
       B.getValue().element = undefined;
@@ -214,7 +214,7 @@ describe('Router', () => {
     });
 
     it('should reuse an element when it already exists on the next node', async () => {
-      const context = new pageJs.Context('/B/somedata');
+      const context = new Context('/B/somedata');
       context.params['bData'] = 'somedata';
       const aElement = document.createElement(testRouteTree.Id.A);
       A.getValue().element = aElement;
@@ -226,7 +226,7 @@ describe('Router', () => {
     });
 
     it('when reusing an element, it should still update the attributes', async () => {
-      const context = new pageJs.Context('/B/bar');
+      const context = new Context('/B/bar');
       context.params['bData'] = 'bar';
       const aElement = document.createElement(testRouteTree.Id.A);
       A.getValue().element = aElement;
@@ -241,7 +241,7 @@ describe('Router', () => {
 
   describe('routeExit', () => {
     it('should remove the element from the routing tree', async () => {
-      const context = new pageJs.Context('/D/E');
+      const context = new Context('/D/E');
       A.getValue().element = document.createElement(testRouteTree.Id.A);
       B.getValue().element = document.createElement(testRouteTree.Id.B);
       await B.getValue().element.routeExit(B, A, testRouteTree.Id.E, context);
@@ -249,7 +249,7 @@ describe('Router', () => {
     });
 
     it('should remove the element from the parent node', async () => {
-      const context = new pageJs.Context('/D/E');
+      const context = new Context('/D/E');
       A.getValue().element = document.createElement(testRouteTree.Id.A);
       const bElement = document.createElement(testRouteTree.Id.B);
       B.getValue().element = bElement;

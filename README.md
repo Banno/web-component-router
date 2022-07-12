@@ -208,7 +208,7 @@ The root element typically has a slightly different configuration.
 import myAppRouteTree from './route-tree.js';
 import router from '@jack-henry/web-component-router';
 import routeMixin from '@jack-henry/web-component-router/routing-mixin.js';
-import pageJs from 'page';
+import {Context} from 'page';
 
 class AppElement extends routeMixin(Polymer.Element) {
   static get is() { return 'app-element'; }
@@ -280,7 +280,7 @@ class AppElement extends routeMixin(Polymer.Element) {
   }
   
   /**
-   * @param {!pageJs.Context} context
+   * @param {!Context} context
    * @param {function(boolean=)} next
    * @private
    */
@@ -338,7 +338,7 @@ router.go(path, params);
 
 /**
  * Register an exit callback to be invoked on every route change
- * @param {function(!pageJs.Context, function(boolean=))} callback
+ * @param {function(!Context, function(boolean=))} callback
  */
 router.addGlobalExitHandler(callback);
 
@@ -372,7 +372,7 @@ router.removeRouteChangeCompleteCallback(callback);
  * Anonymize the route path by replacing param values with their
  * param name. Used for analytics tracking
  *
- * @param {!pageJs.Context} context route enter context
+ * @param {!Context} context route enter context
  * @return {!string}
  */
 const urlPath = router.getRouteUrlWithoutParams(context);

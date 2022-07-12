@@ -1,6 +1,5 @@
 import RouteTreeNode from './lib/route-tree-node.js';
-import page from 'page';
-const Context = page.Context;
+import {Context} from './lib/page.js';
 import basicRoutingMixin from './routing-mixin.js';
 import BasicRoutingInterface from './routing-interface.js';
 
