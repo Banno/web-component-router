@@ -206,9 +206,8 @@ The root element typically has a slightly different configuration.
 
 ```js
 import myAppRouteTree from './route-tree.js';
-import router from '@jack-henry/web-component-router';
+import router, {Context} from '@jack-henry/web-component-router';
 import routeMixin from '@jack-henry/web-component-router/routing-mixin.js';
-import {Context} from 'page';
 
 class AppElement extends routeMixin(Polymer.Element) {
   static get is() { return 'app-element'; }
