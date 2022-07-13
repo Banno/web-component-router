@@ -15,7 +15,7 @@
  *  B  C       E
  */
 
-import {Context, page} from './lib/page.js';
+import page, {Context} from './lib/page.js';
 import RouteTreeNode from './lib/route-tree-node.js';
 
 class Router {

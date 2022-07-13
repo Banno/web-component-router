@@ -11,7 +11,7 @@
  */
 
 import testRouteTree from './utils/testing-route-setup.js';
-import {Context, page} from '../lib/page.js';
+import page, {Context} from '../lib/page.js';
 import Router from '../router.js';
 import RouteTreeNode from '../lib/route-tree-node.js';
 import RoutedElement from './fixtures/custom-fixture.js';
