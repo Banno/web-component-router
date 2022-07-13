@@ -11,7 +11,7 @@
  */
 
 import testRouteTree from './utils/testing-route-setup.js';
-import page, {Context} from '../lib/page.js';
+import {Context} from '../lib/page.js';
 import Router from '../router.js';
 import RouteTreeNode from '../lib/route-tree-node.js';
 import RoutedElement from './fixtures/custom-fixture.js';
@@ -30,7 +30,7 @@ describe('Router', () => {
   /** @type {!Function} */
   let newRouteChangeCallback;
 
-  const startPropertyName = JSCompiler_renameProperty('start', page);
+  const startPropertyName = JSCompiler_renameProperty('start', router.page);
 
   beforeAll(() => {
     // reset router
@@ -43,7 +43,7 @@ describe('Router', () => {
       }
     }).bind(router);
 
-    page('*', (context, next) => {
+    router.page.register('*', (context, next) => {
       context.handled = true; // prevents actually leaving the page
       next();
     });
@@ -55,18 +55,18 @@ describe('Router', () => {
   });
 
   beforeEach(() => {
-    spyOn(page, startPropertyName).and.callThrough();
+    spyOn(router.page, startPropertyName).and.callThrough();
   });
 
   it('.start should register routes and start routing', () => {
-    const initialCallbackLength = page.callbacks.length;
+    const initialCallbackLength = router.page.callbacks.length;
     const builtinCallbackLength = 1;
 
     router.start();
-    // page should be called to register routes ROOT, B, C, D, E.
+    // router.page should be called to register routes ROOT, B, C, D, E.
     // A should NOT be registered as it is abstract (has a zero length path).
-    expect(page.callbacks.length).toBe(5 + initialCallbackLength + builtinCallbackLength);
-    expect(page.start).toHaveBeenCalled();
+    expect(router.page.callbacks.length).toBe(5 + initialCallbackLength + builtinCallbackLength);
+    expect(router.page.start).toHaveBeenCalled();
   });
 
   it('should not have a previous route id initially', () => {
@@ -144,12 +144,12 @@ describe('Router', () => {
 
   describe('go()', () => {
     beforeEach(() => {
-      spyOn(page, JSCompiler_renameProperty('show', page));
+      spyOn(router.page, JSCompiler_renameProperty('show', router.page));
     });
 
     it('should navigate to the given path', () => {
       router.go('/A');
-      expect(page.show).toHaveBeenCalledWith('/A');
+      expect(router.page.show).toHaveBeenCalledWith('/A');
     });
 
     it('should replace path parameters with given values', () => {
@@ -157,18 +157,18 @@ describe('Router', () => {
         'accountId': '1234',
         'docId': '6789',
       });
-      expect(page.show).toHaveBeenCalledWith('/account/1234/documents/6789');
+      expect(router.page.show).toHaveBeenCalledWith('/account/1234/documents/6789');
     });
   });
 
   describe('query context', () => {
     afterEach(() => {
       // Remove the callback added in the test.
-      page.callbacks.pop();
+      router.page.callbacks.pop();
     });
 
     it('should be an empty object if there are no query parameters', (done) => {
-      page('/test', (context, next) => {
+      router.page.register('/test', (context, next) => {
         expect(context.query).toEqual({});
         done();
       });
@@ -176,7 +176,7 @@ describe('Router', () => {
     });
 
     it('should have properties that match the query parameters', (done) => {
-      page('/test', (context, next) => {
+      router.page.register('/test', (context, next) => {
         expect(context.query['foo']).toBe('bar');
         expect(context.query['noValue']).toBe('');
         done();

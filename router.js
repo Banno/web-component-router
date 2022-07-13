@@ -15,8 +15,11 @@
  *  B  C       E
  */
 
-import page, {Context} from './lib/page.js';
+import {Context, Page} from './lib/page.js';
 import RouteTreeNode from './lib/route-tree-node.js';
+import routingMixin from './animated-routing-mixin.js';
+import animatedRoutingMixin from './animated-routing-mixin.js';
+import BasicRoutingInterface from './routing-interface.js';
 
 class Router {
   constructor() {
@@ -40,6 +43,8 @@ class Router {
     this.routeChangeStartCallbacks_ = new Set();
     /** @type {!Set<!function(!Error=)>} */
     this.routeChangeCompleteCallbacks_ = new Set();
+
+    this.page = new Page();
   }
 
   /** @return {!RouteTreeNode|undefined} */
@@ -69,10 +74,10 @@ class Router {
   start() {
     this.registerRoutes_();
 
-    document.addEventListener('tap', page.clickHandler, false);
-    document.addEventListener('click', page.clickHandler, false);
+    document.addEventListener('tap', this.page.clickHandler.bind(this.page), false);
+    document.addEventListener('click', this.page.clickHandler.bind(this.page), false);
 
-    page.start({
+    this.page.start({
       click: false,
       popstate: true,
       hashbang: false,
@@ -87,7 +92,7 @@ class Router {
    */
   go(path, params) {
     path = this.url(path, params);
-    page.show(path);
+    this.page.show(path);
   }
 
   /**
@@ -98,7 +103,7 @@ class Router {
    */
   redirect(path, params) {
     path = this.url(path, params);
-    page.replace(path);
+    this.page.replace(path);
   }
 
   /**
@@ -146,7 +151,7 @@ class Router {
    * @param {function(!Context, function(boolean=))} callback
    */
   addGlobalExitHandler(callback) {
-    page.exit('*', callback);
+    this.page.exit('*', callback);
   }
 
   /**
@@ -155,7 +160,7 @@ class Router {
    * @param {function(!Context, function(boolean=))} callback
    */
   addExitHandler(route, callback) {
-    page.exit(route, callback);
+    this.page.exit(route, callback);
   }
 
   /**
@@ -164,7 +169,7 @@ class Router {
    * @param {function(!Context, function(boolean=))} callback
    */
   addRouteHandler(route, callback) {
-    page(route, callback);
+    this.page.register(route, callback);
   }
 
   /** @param {!function()} callback */
@@ -218,7 +223,7 @@ class Router {
    * @private
    */
   registerRoutes_() {
-    page('*', this.parseQueryString_);
+    this.page.register('*', this.parseQueryString_);
 
     this.routeTree_.traverse((node) => {
       if (node === null) {
@@ -233,7 +238,7 @@ class Router {
         return;
       }
 
-      page(routeData.path, this.routeChangeCallback_.bind(this, node));
+      this.page.register(routeData.path, this.routeChangeCallback_.bind(this, node));
     });
   }
 
@@ -288,4 +293,4 @@ class Router {
 }
 
 export default Router;
-export {Context, page};
+export {animatedRoutingMixin, BasicRoutingInterface, Context, RouteTreeNode, routingMixin};
