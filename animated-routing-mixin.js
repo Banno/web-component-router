@@ -36,6 +36,7 @@ function animatedRoutingMixin(Superclass, className) {
      * @param {!RouteTreeNode|undefined} nextNodeIfExists
      * @param {string} routeId
      * @param {!Context} context
+     * @return {!Promise<boolean|undefined>}
      */
     async routeEnter(currentNode, nextNodeIfExists, routeId, context) {
       const currentElement = currentNode.getValue().element;
@@ -58,6 +59,7 @@ function animatedRoutingMixin(Superclass, className) {
      * @param {!RouteTreeNode|undefined} nextNode
      * @param {string} routeId
      * @param {!Context} context
+     * @return {!Promise<undefined>}
      */
     async routeExit(currentNode, nextNode, routeId, context) {
       const currentElement = currentNode.getValue().element;

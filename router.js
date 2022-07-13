@@ -40,9 +40,9 @@ class Router {
       this.nextStateWasPopped = true;
     }, true);
 
-    /** @type {!Set<!function()>} */
+    /** @type {!Set<!function():?>} */
     this.routeChangeStartCallbacks_ = new Set();
-    /** @type {!Set<!function(!Error=)>} */
+    /** @type {!Set<!function(!Error=):?>} */
     this.routeChangeCompleteCallbacks_ = new Set();
 
     this.page = new Page();

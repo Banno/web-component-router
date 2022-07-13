@@ -2,7 +2,7 @@ import RouteTreeNode from './lib/route-tree-node.js';
 import {Context} from './lib/page.js';
 
 /** @interface */
-const BasicRoutingInterface = class {
+class BasicRoutingInterface {
   /**
    * Default implementation for the callback on entering a route node.
    * This will only be used if an element does not define it's own routeEnter method.

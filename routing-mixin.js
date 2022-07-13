@@ -99,6 +99,7 @@ function routingMixin(Superclass) {
      * @param {!RouteTreeNode|undefined} nextNode
      * @param {string} routeId
      * @param {!Context} context
+     * @return {!Promise<undefined>}
      */
     async routeExit(currentNode, nextNode, routeId, context) {
       const currentElement = currentNode.getValue().element;

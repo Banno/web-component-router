@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "esNext",
+    "module": "ES2020",
+    "lib": ["es2015", "dom", "es2016.array.include", "ES2017.Object"],
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "moduleResolution": "nodenext",
+    "noImplicitThis": true,
+    "noUnusedParameters": false
+  },
+  "include": ["src/**/*.js", "*.js"],
+  "exclude": ["node_modules", "test"]
+}
