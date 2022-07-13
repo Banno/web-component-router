@@ -201,19 +201,7 @@ class Router {
    * @private
    */
   parseQueryString_(context, next) {
-    /** @type {!Object<string,(string|!Array<string>)>} */
-    context.query = {};
-    const urlParams = new URLSearchParams(context.querystring);
-    urlParams.forEach((value, key) => {
-      if (key in context.query) {
-        if (!Array.isArray(context.query)) {
-          context.query[key] = [context.query[key]];
-        }
-        context.query[key].push(value);
-      } else {
-        context.query[key] = value;
-      }
-    });
+    context.query = new URLSearchParams(context.querystring);
     next();
   }
 

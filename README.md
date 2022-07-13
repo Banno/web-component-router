@@ -72,8 +72,7 @@ and ids so the strings are maintainable.
  *           MAIN-DASHBOARD         DETAIL-VIEW
  */
 
-import RouteData from '@jack-henry/web-component-router/lib/route-data.js';
-import RouteTreeNode from '@jack-henry/web-component-router/lib/route-tree-node.js';
+import {RouteData, RouteTreeNode} from '@jack-henry/web-component-router';
 
 const dashboard = new RouteTreeNode(
     new RouteData('MainDashboard', 'MAIN-DASHBOARD', '/'));
@@ -206,10 +205,9 @@ The root element typically has a slightly different configuration.
 
 ```js
 import myAppRouteTree from './route-tree.js';
-import router, {Context} from '@jack-henry/web-component-router';
-import routeMixin from '@jack-henry/web-component-router/routing-mixin.js';
+import router, {Context, routingMixin} from '@jack-henry/web-component-router';
 
-class AppElement extends routeMixin(Polymer.Element) {
+class AppElement extends routingMixin(Polymer.Element) {
   static get is() { return 'app-element'; }
   
   connectedCallback() {
@@ -258,10 +256,9 @@ issue.
 
 ```js
 import myAppRouteTree from './route-tree.js';
-import router from '@jack-henry/web-component-router';
-import routeMixin from '@jack-henry/web-component-router/routing-mixin.js';
+import router, {routingMixin} from '@jack-henry/web-component-router';
 
-class AppElement extends routeMixin(Polymer.Element) {
+class AppElement extends routingMixin(Polymer.Element) {
   static get is() { return 'app-element'; }
   
   connectedCallback() {

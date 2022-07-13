@@ -169,7 +169,8 @@ describe('Router', () => {
 
     it('should be an empty object if there are no query parameters', (done) => {
       router.page.register('/test', (context, next) => {
-        expect(context.query).toEqual({});
+        expect(context.query).toBeInstanceOf(URLSearchParams);
+        expect(Array.from(context.query.keys())).toEqual([]);
         done();
       });
       router.go('/test');
@@ -177,8 +178,8 @@ describe('Router', () => {
 
     it('should have properties that match the query parameters', (done) => {
       router.page.register('/test', (context, next) => {
-        expect(context.query['foo']).toBe('bar');
-        expect(context.query['noValue']).toBe('');
+        expect(context.query.get('foo')).toBe('bar');
+        expect(context.query.get('noValue')).toBe('');
         done();
       });
       router.go('/test?foo=bar&noValue');
