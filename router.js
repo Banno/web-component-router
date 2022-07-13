@@ -17,9 +17,10 @@
 
 import {Context, Page} from './lib/page.js';
 import RouteTreeNode from './lib/route-tree-node.js';
-import routingMixin from './animated-routing-mixin.js';
+import routingMixin from './routing-mixin.js';
 import animatedRoutingMixin from './animated-routing-mixin.js';
 import BasicRoutingInterface from './routing-interface.js';
+import RouteData from './lib/route-data.js';
 
 class Router {
   constructor() {
@@ -293,4 +294,4 @@ class Router {
 }
 
 export default Router;
-export {animatedRoutingMixin, BasicRoutingInterface, Context, RouteTreeNode, routingMixin};
+export {animatedRoutingMixin, BasicRoutingInterface, Context, RouteData, RouteTreeNode, routingMixin};

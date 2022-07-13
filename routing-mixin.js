@@ -35,7 +35,7 @@ function routingMixin(Superclass) {
         const nextNodeData = /** @type {!RouteData} */(nextNode.getValue());
 
         const thisElem = /** @type {!Element} */ (/** @type {?} */ (this));
-        /** @type {!Element} */
+        /** @type {Element} */
         let nextElement = nextNodeData.element || thisElem.querySelector(nextNodeData.tagName.toLowerCase());
 
         // Reuse the element if it already exists in the dom.
