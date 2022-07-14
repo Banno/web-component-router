@@ -12,9 +12,10 @@
     "README.md"
   ],
   "scripts": {
-    "clean": "rimraf './lib/**/*.d.ts' && rimraf './*.d.ts'",
     "build": "tsc",
-    "prepublish": "yarn clean && yarn build"
+    "clean": "rimraf './lib/**/*.d.ts' && rimraf './*.d.ts'",
+    "prepublish": "yarn clean && yarn build",
+    "test": "karma start test/karma.config.cjs --single-run"
   },
   "repository": {
     "type": "git",
