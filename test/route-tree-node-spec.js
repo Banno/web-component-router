@@ -12,7 +12,7 @@
  *  B  C       E
  */
 import testRouteTree from './utils/testing-route-setup.js';
-import {Context} from '../lib/page.js';
+import {Context} from '../router.js';
 
 describe('RouteTreeNode', () => {
   const ROOT = testRouteTree.tree.getNodeByKey(testRouteTree.Id.ROOT);

@@ -11,9 +11,7 @@
  */
 
 import testRouteTree from './utils/testing-route-setup.js';
-import {Context} from '../lib/page.js';
-import Router from '../router.js';
-import RouteTreeNode from '../lib/route-tree-node.js';
+import Router, {Context, RouteTreeNode} from '../router.js';
 import RoutedElement from './fixtures/custom-fixture.js';
 
 function JSCompiler_renameProperty(propName, instance) {

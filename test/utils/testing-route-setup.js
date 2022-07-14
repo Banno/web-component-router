@@ -17,9 +17,7 @@
  *  effectively require authentication.
  */
 
-import RouteData from '../../lib/route-data.js';
-import RouteTreeNode from '../../lib/route-tree-node.js';
-import RoutingMixin from '../../routing-mixin.js';
+import {RouteData, RouteTreeNode, routingMixin}  from '../../router.js';
 
 /** @enum {string} */
 const RouteId = {
@@ -36,7 +34,7 @@ const RouteId = {
  * @extends {HTMLElement}
  * @implements {RoutingMixin.Type}
  */
-const RoutedElement = RoutingMixin(HTMLElement);
+const RoutedElement = routingMixin(HTMLElement);
 
 for (const routeId in RouteId) {
   if (RouteId.hasOwnProperty(routeId)) {
