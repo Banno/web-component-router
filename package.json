@@ -12,11 +12,9 @@
     "README.md"
   ],
   "scripts": {
-    "clean:typings": "rimraf './src/**/*.d.ts' && rimraf './*.d.ts'",
-    "typings": "yarn clean:typings && tsc",
-    "typecheck": "tsc --emitDeclarationOnly false --noEmit",
-    "build": "yarn typings",
-    "prepublish": "yarn build"
+    "clean": "rimraf './lib/**/*.d.ts' && rimraf './*.d.ts'",
+    "build": "tsc",
+    "prepublish": "yarn clean && yarn build"
   },
   "repository": {
     "type": "git",

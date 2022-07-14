@@ -15,6 +15,7 @@ function animatedRoutingMixin(Superclass, className) {
    * @extends {Superclass}
    * @implements {BasicRoutingInterface}
    */
+  // @ts-ignore
   const BasicRoutingElement = basicRoutingMixin(Superclass);
 
   /**
@@ -25,6 +26,7 @@ function animatedRoutingMixin(Superclass, className) {
    */
   class AnimatedRouting extends BasicRoutingElement {
     connectedCallback() {
+      // @ts-ignore
       super.connectedCallback();
       document.documentElement.scrollTop = document.body.scrollTop = 0;
     }
@@ -36,7 +38,7 @@ function animatedRoutingMixin(Superclass, className) {
      * @param {!RouteTreeNode|undefined} nextNodeIfExists
      * @param {string} routeId
      * @param {!Context} context
-     * @return {!Promise<boolean|undefined>}
+     * @return {!Promise<boolean|void>}
      */
     async routeEnter(currentNode, nextNodeIfExists, routeId, context) {
       const currentElement = currentNode.getValue().element;
@@ -59,7 +61,7 @@ function animatedRoutingMixin(Superclass, className) {
      * @param {!RouteTreeNode|undefined} nextNode
      * @param {string} routeId
      * @param {!Context} context
-     * @return {!Promise<undefined>}
+     * @return {!Promise<void>}
      */
     async routeExit(currentNode, nextNode, routeId, context) {
       const currentElement = currentNode.getValue().element;

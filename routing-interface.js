@@ -11,7 +11,7 @@ class BasicRoutingInterface {
    * @param {!RouteTreeNode|undefined} nextNodeIfExists
    * @param {string} routeId
    * @param {!Context} context
-   * @return {!Promise<boolean|undefined>}
+   * @return {!Promise<boolean|void>}
    */
   async routeEnter(currentNode, nextNodeIfExists, routeId, context) { }
 
@@ -23,7 +23,7 @@ class BasicRoutingInterface {
    * @param {!RouteTreeNode|undefined} nextNode
    * @param {string} routeId
    * @param {!Context} context
-   * @return {!Promise<undefined>}
+   * @return {!Promise<void>}
    */
   async routeExit(currentNode, nextNode, routeId, context) { }
 };

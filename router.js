@@ -70,7 +70,7 @@ class Router {
 
   /**
    * Build the routing tree and begin routing
-   * @return {undefined}
+   * @return {void}
    */
   start() {
     this.registerRoutes_();
@@ -82,7 +82,9 @@ class Router {
       click: false,
       popstate: true,
       hashbang: false,
-      decodeURLComponents: true
+      decodeURLComponents: true,
+      window: undefined,
+      dispatch: undefined
     });
   }
 
@@ -149,7 +151,7 @@ class Router {
 
   /**
    * Register an exit callback to be invoked on every route change
-   * @param {function(!Context, function(boolean=))} callback
+   * @param {function(!Context, function(boolean=):?):?} callback
    */
   addGlobalExitHandler(callback) {
     this.page.exit('*', callback);
@@ -158,7 +160,7 @@ class Router {
   /**
    * Register an exit callback for a particular route
    * @param {!string} route
-   * @param {function(!Context, function(boolean=))} callback
+   * @param {function(!Context, function(boolean=):?):?} callback
    */
   addExitHandler(route, callback) {
     this.page.exit(route, callback);
@@ -167,28 +169,28 @@ class Router {
   /**
    * Register an entry callback for a particular route
    * @param {!string} route
-   * @param {function(!Context, function(boolean=))} callback
+   * @param {function(!Context, function(boolean=):?):?} callback
    */
   addRouteHandler(route, callback) {
     this.page.register(route, callback);
   }
 
-  /** @param {!function()} callback */
+  /** @param {!function():?} callback */
   addRouteChangeStartCallback(callback) {
     this.routeChangeStartCallbacks_.add(callback);
   }
 
-  /** @param {!function()} callback */
+  /** @param {!function():?} callback */
   removeRouteChangeStartCallback(callback) {
     this.routeChangeStartCallbacks_.delete(callback);
   }
 
-  /** @param {!function(!Error=)} callback */
+  /** @param {!function(!Error=):?} callback */
   addRouteChangeCompleteCallback(callback) {
     this.routeChangeCompleteCallbacks_.add(callback);
   }
 
-  /** @param {!function(!Error=)} callback */
+  /** @param {!function(!Error=):?} callback */
   removeRouteChangeCompleteCallback(callback) {
     this.routeChangeCompleteCallbacks_.delete(callback);
   }
@@ -197,7 +199,7 @@ class Router {
    * Adds the query parameters to the Page.js context.
    *
    * @param {!Context} context
-   * @param {function()} next
+   * @param {function():?} next
    * @private
    */
   parseQueryString_(context, next) {
@@ -234,7 +236,7 @@ class Router {
   /**
    * @param {!RouteTreeNode} routeTreeNode
    * @param {!Context} context
-   * @param {function()} next
+   * @param {function():?} next
    * @private
    */
   async routeChangeCallback_(routeTreeNode, context, next) {
