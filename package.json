@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/Banno/web-component-router",
   "dependencies": {
-    "page": "1.7.x",
+    "page": "1.11.x",
     "qs": "6.11.0"
   },
   "devDependencies": {
