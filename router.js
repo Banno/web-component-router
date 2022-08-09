@@ -15,46 +15,12 @@
  *  B  C       E
  */
 
-import pageJs from 'page';
-import qsParse from 'qs/lib/parse.js';
+import {Context, Page} from './lib/page.js';
 import RouteTreeNode from './lib/route-tree-node.js';
-
-/**
- * @param {!URL|!HTMLAnchorElement} url
- * @return {!{
- *   protocol: string,
- *   hostname: string,
- *   port: string
- * }}
- */
-function urlParts(url) {
-  const parts = {
-    protocol: url.protocol,
-    hostname: url.hostname,
-    port: url.port
-  };
-  if (url.port.trim().length > 0) {
-    parts.port = url.port;
-  } else if (/^https:$/i.test(url.protocol)) {
-    parts.port = '443';
-  } else if (/^http:$/i.test(url.protocol)) {
-    parts.port = '80';
-  }
-  return parts;
-}
-
-/**
- * @param {string} href1
- * @param {string} href2
- * @return {boolean}
- */
-function compareOrigins(href1, href2) {
-  const url1 = urlParts(new URL(href1, location.toString()));
-  const url2 = urlParts(new URL(href2, location.toString()));
-  return url1.protocol === url2.protocol &&
-      url1.hostname === url2.hostname &&
-      url1.port === url2.port;
-}
+import routingMixin from './lib/routing-mixin.js';
+import animatedRoutingMixin from './lib/animated-routing-mixin.js';
+import BasicRoutingInterface from './lib/routing-interface.js';
+import RouteData from './lib/route-data.js';
 
 class Router {
   constructor() {
@@ -74,10 +40,12 @@ class Router {
       this.nextStateWasPopped = true;
     }, true);
 
-    /** @type {!Set<!function()>} */
+    /** @type {!Set<!function():?>} */
     this.routeChangeStartCallbacks_ = new Set();
-    /** @type {!Set<!function(!Error=)>} */
+    /** @type {!Set<!function(!Error=):?>} */
     this.routeChangeCompleteCallbacks_ = new Set();
+
+    this.page = new Page();
   }
 
   /** @return {!RouteTreeNode|undefined} */
@@ -102,19 +70,21 @@ class Router {
 
   /**
    * Build the routing tree and begin routing
-   * @return {undefined}
+   * @return {void}
    */
   start() {
     this.registerRoutes_();
 
-    document.addEventListener('tap', Router.navigationEvent_, false);
-    document.addEventListener('click', Router.navigationEvent_, false);
+    document.addEventListener('tap', this.page.clickHandler.bind(this.page), false);
+    document.addEventListener('click', this.page.clickHandler.bind(this.page), false);
 
-    pageJs.start({
+    this.page.start({
       click: false,
       popstate: true,
       hashbang: false,
-      decodeURLComponents: true
+      decodeURLComponents: true,
+      window: undefined,
+      dispatch: undefined
     });
   }
 
@@ -125,7 +95,7 @@ class Router {
    */
   go(path, params) {
     path = this.url(path, params);
-    pageJs.show(path);
+    this.page.show(path);
   }
 
   /**
@@ -136,7 +106,7 @@ class Router {
    */
   redirect(path, params) {
     path = this.url(path, params);
-    pageJs.replace(path);
+    this.page.replace(path);
   }
 
   /**
@@ -181,147 +151,59 @@ class Router {
 
   /**
    * Register an exit callback to be invoked on every route change
-   * @param {function(!pageJs.Context, function(boolean=))} callback
+   * @param {function(!Context, function(boolean=):?):?} callback
    */
   addGlobalExitHandler(callback) {
-    pageJs.exit('*', callback);
+    this.page.exit('*', callback);
   }
 
   /**
    * Register an exit callback for a particular route
    * @param {!string} route
-   * @param {function(!pageJs.Context, function(boolean=))} callback
+   * @param {function(!Context, function(boolean=):?):?} callback
    */
   addExitHandler(route, callback) {
-    pageJs.exit(route, callback);
+    this.page.exit(route, callback);
   }
 
   /**
    * Register an entry callback for a particular route
    * @param {!string} route
-   * @param {function(!pageJs.Context, function(boolean=))} callback
+   * @param {function(!Context, function(boolean=):?):?} callback
    */
   addRouteHandler(route, callback) {
-    pageJs(route, callback);
+    this.page.register(route, callback);
   }
 
-  /** @param {!function()} callback */
+  /** @param {!function():?} callback */
   addRouteChangeStartCallback(callback) {
     this.routeChangeStartCallbacks_.add(callback);
   }
 
-  /** @param {!function()} callback */
+  /** @param {!function():?} callback */
   removeRouteChangeStartCallback(callback) {
     this.routeChangeStartCallbacks_.delete(callback);
   }
 
-  /** @param {!function(!Error=)} callback */
+  /** @param {!function(!Error=):?} callback */
   addRouteChangeCompleteCallback(callback) {
     this.routeChangeCompleteCallbacks_.add(callback);
   }
 
-  /** @param {!function(!Error=)} callback */
+  /** @param {!function(!Error=):?} callback */
   removeRouteChangeCompleteCallback(callback) {
     this.routeChangeCompleteCallbacks_.delete(callback);
   }
 
   /**
-   * A modified copy of the pagejs onclick function.
-   * Properly handles Polymer "tap" events.
-   *
-   * @param {!Event} e
-   */
-  static navigationEvent_(e) {
-    if (e.type !== 'tap' && (e.which === null ? e.button : e.which) !== 1) {
-      return;
-    }
-
-    if (e.metaKey || e.ctrlKey || e.shiftKey) {
-      return;
-    }
-    if (e.defaultPrevented) {
-      return;
-    }
-
-    // ensure link
-    // use shadow dom when available
-    let el = e.target;
-    if (el.nodeName !== 'A') {
-      const composedPath = e.composedPath();
-      for (let i = 0; i < composedPath.length; i++) {
-        el = composedPath[i];
-        if (el.nodeName === 'A') {
-          break;
-        }
-      }
-    }
-
-    if (!el || el.nodeName !== 'A') {
-      return;
-    }
-
-    // Ignore if tag has
-    // 1. "download" attribute
-    // 2. rel="external" attribute
-    if (el.hasAttribute('download') || el.getAttribute('rel') === 'external') {
-      return;
-    }
-
-    // ensure a href exists and non-hash for the same path
-    const link = el.getAttribute('href');
-    if (!link || ((el.pathname === location.pathname || el.pathname === '') && (el.hash || link === '#'))) {
-      return;
-    }
-
-    // Check for mailto: in the href
-    if (el.protocol && el.protocol.length > 0 && !/^https?:$/.test(el.protocol)) {
-      return;
-    }
-
-    // check target
-    if (el.target) {
-      return;
-    }
-
-    // x-origin
-    // IE anchor tags have default ports ":80", ":443", ete,
-    // but the location url does not.
-    // Normalize the location href and compare.
-    if (!compareOrigins(location.href, el.href)) {
-      return;
-    }
-
-    // rebuild path
-    const path = el.pathname + el.search + (el.hash || '');
-
-    /* If we ever support running the app in a subfolder, we'll need this block
-    // same page
-    var orig = path;
-
-    let base = '';
-    if (path.indexOf(base) === 0) {
-      path = path.substr(base.length);
-    }
-
-    if (base && orig === path) {
-      return;
-    }
-    */
-
-    e.preventDefault();
-    // pageJs.show(orig);
-    pageJs.show(path);
-  }
-
-  /**
    * Adds the query parameters to the Page.js context.
    *
-   * @param {!pageJs.Context} context
-   * @param {function()} next
+   * @param {!Context} context
+   * @param {function():?} next
    * @private
    */
   parseQueryString_(context, next) {
-    context.query = qsParse(context.querystring, {});
+    context.query = new URLSearchParams(context.querystring);
     next();
   }
 
@@ -332,7 +214,7 @@ class Router {
    * @private
    */
   registerRoutes_() {
-    pageJs('*', this.parseQueryString_);
+    this.page.register('*', this.parseQueryString_);
 
     this.routeTree_.traverse((node) => {
       if (node === null) {
@@ -347,14 +229,14 @@ class Router {
         return;
       }
 
-      pageJs(routeData.path, this.routeChangeCallback_.bind(this, node));
+      this.page.register(routeData.path, this.routeChangeCallback_.bind(this, node));
     });
   }
 
   /**
    * @param {!RouteTreeNode} routeTreeNode
-   * @param {!pageJs.Context} context
-   * @param {function()} next
+   * @param {!Context} context
+   * @param {function():?} next
    * @private
    */
   async routeChangeCallback_(routeTreeNode, context, next) {
@@ -377,7 +259,7 @@ class Router {
    * Replace route path param values with their param name
    * for analytics tracking
    *
-   * @param {!pageJs.Context} context route enter context
+   * @param {!Context} context route enter context
    * @return {!string}
    */
   getRouteUrlWithoutParams(context) {
@@ -402,3 +284,4 @@ class Router {
 }
 
 export default Router;
+export {animatedRoutingMixin, BasicRoutingInterface, Context, RouteData, RouteTreeNode, routingMixin};

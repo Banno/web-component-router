@@ -12,7 +12,7 @@
  *  B  C       E
  */
 import testRouteTree from './utils/testing-route-setup.js';
-import pageJs from 'page';
+import {Context} from '../router.js';
 
 describe('RouteTreeNode', () => {
   const ROOT = testRouteTree.tree.getNodeByKey(testRouteTree.Id.ROOT);
@@ -65,17 +65,17 @@ describe('RouteTreeNode', () => {
     });
 
     it('activating a route without a previous route id only invokes entry methods', async () => {
-      await C.activate(undefined, new pageJs.Context('/C'));
+      await C.activate(undefined, new Context('/C'));
       expect(routePath.join('_')).toBe('ROOT-enter_A-enter_C-enter');
     });
 
     it('activating a route should call the correct methods', async () => {
-      await E.activate(B.getKey(), new pageJs.Context('/D/E'));
+      await E.activate(B.getKey(), new Context('/D/E'));
       expect(routePath.join('_')).toBe('B-exit_A-exit_ROOT-enter_D-enter_E-enter');
     });
 
     it('activating a route should call the correct methods 2', async () => {
-      await C.activate(B.getKey(), new pageJs.Context('/C'));
+      await C.activate(B.getKey(), new Context('/C'));
       expect(routePath.join('_')).toBe('B-exit_ROOT-enter_A-enter_C-enter');
     });
 
@@ -84,7 +84,7 @@ describe('RouteTreeNode', () => {
         routePath.push('A-enter');
         return Promise.resolve(false);
       });
-      await C.activate(E.getKey(), new pageJs.Context('/D/E'));
+      await C.activate(E.getKey(), new Context('/D/E'));
       expect(routePath.join('_')).toBe('E-exit_D-exit_ROOT-enter_A-enter');
     });
   });
