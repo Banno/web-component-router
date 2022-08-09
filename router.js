@@ -196,26 +196,12 @@ class Router {
   }
 
   /**
-   * Adds the query parameters to the Page.js context.
-   *
-   * @param {!Context} context
-   * @param {function():?} next
-   * @private
-   */
-  parseQueryString_(context, next) {
-    context.query = new URLSearchParams(context.querystring);
-    next();
-  }
-
-  /**
    * Walk the route tree and register route nodes with
    * the Page.js router.
    *
    * @private
    */
   registerRoutes_() {
-    this.page.register('*', this.parseQueryString_);
-
     this.routeTree_.traverse((node) => {
       if (node === null) {
         return;
