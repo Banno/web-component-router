@@ -58,7 +58,7 @@ describe('Router', () => {
 
   it('.start should register routes and start routing', () => {
     const initialCallbackLength = router.page.callbacks.length;
-    const builtinCallbackLength = 1;
+    const builtinCallbackLength = 0;
 
     router.start();
     // router.page should be called to register routes ROOT, B, C, D, E.
