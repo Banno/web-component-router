@@ -10,8 +10,9 @@
     "emitDeclarationOnly": true,
     "moduleResolution": "nodenext",
     "noImplicitThis": true,
-    "noUnusedParameters": false
+    "noUnusedParameters": false,
+    "typeRoots": ["types", "node_modules/@types"]
   },
-  "include": ["src/**/*.js", "*.js"],
+  "include": ["types/*.ts", "lib/**/*.js", "*.js"],
   "exclude": ["node_modules", "test"]
 }
