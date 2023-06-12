@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@polymer/polymer": "^3.4.1",
-    "jasmine-core": "4.x",
+    "jasmine-core": "5.x",
     "karma": "6.x",
     "karma-chrome-launcher": "^3.1.0",
     "karma-jasmine": "5.x",
