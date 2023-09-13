@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "esNext",
-    "module": "ES2020",
+    "module": "NodeNext",
     "lib": ["es2015", "dom", "es2016.array.include", "ES2017.Object"],
     "allowJs": true,
     "checkJs": true,
