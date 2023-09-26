@@ -226,7 +226,9 @@ class Router {
    * @private
    */
   async routeChangeCallback_(routeTreeNode, context, next) {
-    this.routeChangeStartCallbacks_.forEach((cb) => cb());
+    for (const cb of this.routeChangeStartCallbacks_) {
+      cb();
+    }
     this.prevNodeId_ = this.currentNodeId_;
     this.currentNodeId_ = routeTreeNode.getKey();
     /** @type {!Error|undefined} */
@@ -238,7 +240,9 @@ class Router {
     }
     next();
     this.nextStateWasPopped = false;
-    this.routeChangeCompleteCallbacks_.forEach((cb) => cb(routeError));
+    for (const cb of this.routeChangeCompleteCallbacks_) {
+      cb(routeError);
+    }
   }
 
   /**
