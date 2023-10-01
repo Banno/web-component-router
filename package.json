@@ -1,6 +1,6 @@
 {
   "name": "@jack-henry/web-component-router",
-  "version": "2.0.3",
+  "version": "3.0.0",
   "description": "Web Components Router",
   "main": "router.js",
   "type": "module",
@@ -33,7 +33,7 @@
   "resolutions": {
     "@types/node": "^18.11.18",
     "socket.io-parser": "^4.2.3",
-    "qs":"^6.7.3",
+    "qs": "^6.7.3",
     "engine.io": "^6.4.2"
   },
   "devDependencies": {
