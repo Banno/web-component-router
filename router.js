@@ -16,16 +16,14 @@
  */
 
 /**
-  * @typedef {{
-  *  id: string,
-  *  tagName: string,
-  *  path: string,
-  *  parameters: (Array<string>=),
-  *  unAuth: (boolean=),
-  *  subRoutes: (Array<RouteConfigItem>=),
-  * }}
-*/
-let RouteConfig;
+ * @typedef {Object} RouteConfig
+ * @property {string} id
+ * @property {string} tagName
+ * @property {string} path
+ * @property {Array<string>=} parameters
+ * @property {boolean=} unAuth
+ * @property {Array<RouteConfig>=} subRoutes
+ */
 
 import {Context, Page} from './lib/page.js';
 import RouteTreeNode from './lib/route-tree-node.js';
@@ -83,7 +81,7 @@ class Router {
 
   /** @param {!RouteConfig} routeConfig */
   buildRouteTree(routeConfig) {
-    const node = new RouteTreeNode(new RouteData(routeConfig.id, routeConfig.tagName, routeConfig.path, routeConfig.params || [], !routeConfig.unAuth));
+    const node = new RouteTreeNode(new RouteData(routeConfig.id, routeConfig.tagName, routeConfig.path, routeConfig.parameters || [], !routeConfig.unAuth));
     if (routeConfig.subRoutes) {
       routeConfig.subRoutes.forEach(route => {
         node.addChild(this.buildRouteTree(route));
