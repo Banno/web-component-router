@@ -135,7 +135,7 @@ const routeConfig = {
 const router = New Router(routeConfig);
 ```
 
-When using this method the default is that a route requires authentication, as shown above in the 'about' route, set `unAuth` to true to create a route which does not require authentication.
+When using this method the default is that a route requires authentication, as shown above in the 'about' route, set `authenticated` to false to create a route which does not require authentication.
 
 ## Redirecting
 
