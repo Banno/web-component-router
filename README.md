@@ -128,7 +128,7 @@ const routeConfig = {
       id: 'app-about',
       tagName: 'APP-ABOUT',
       path: '/about',
-      unAuth: true,
+      authenticated: false,
     }]
 };
 

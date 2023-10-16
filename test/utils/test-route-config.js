@@ -8,7 +8,7 @@ const testRouteConfig = {
         path: '/users/:userId([0-9]{1,6})',
         params: ['userId'],
     }, {
-        id: 'APP-USER-ACCOUNT',
+        id: 'app-user-account',
         tagName: 'APP-ACCOUNT-PAGE',
         path: '/users/:userId([0-9]{1,6})/accounts/:accountId([0-9]{1,6})',
         params: ['userId', 'accountId'],
@@ -16,7 +16,7 @@ const testRouteConfig = {
       id: 'app-about',
       tagName: 'APP-ABOUT',
       path: '/about',
-      unAuth: true,
+      authenticated: false,
     }]
 };
 

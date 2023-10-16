@@ -111,7 +111,7 @@ describe('Router', () => {
         path: '/users/:userId([0-9]{1,6})',
         requiresAuthentication: true,
     }, {
-        id: 'APP-USER-ACCOUNT',
+        id: 'app-user-account',
         tagName: 'APP-ACCOUNT-PAGE',
         path: '/users/:userId([0-9]{1,6})/accounts/:accountId([0-9]{1,6})',
         requiresAuthentication: true,
@@ -134,6 +134,13 @@ describe('Router', () => {
           expect(data[prop]).toBe(testSubRouteData[index][prop]);
         })
       });
+    });
+
+    it('should set authentication to true by default', () => {
+      const routeTree = router.buildRouteTree(testRouteConfig);
+      const subRoutes = routeTree.getChildren();
+      expect(subRoutes[0].getValue().requiresAuthentication).toBe(true);
+      expect(subRoutes[2].getValue().requiresAuthentication).toBe(false);
     });
   });
 
