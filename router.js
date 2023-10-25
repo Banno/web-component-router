@@ -20,7 +20,7 @@
  * @property {string} id
  * @property {string} tagName
  * @property {string} path
- * @property {Array<string>=} parameters
+ * @property {Array<string>=} params
  * @property {boolean=} authenticated
  * @property {Array<RouteConfig>=} subRoutes
  */
@@ -82,7 +82,7 @@ class Router {
   /** @param {!RouteConfig} routeConfig */
   buildRouteTree(routeConfig) {
     const authenticated = [true, false].includes(routeConfig.authenticated) ?  routeConfig.authenticated : true;
-    const node = new RouteTreeNode(new RouteData(routeConfig.id, routeConfig.tagName, routeConfig.path, routeConfig.parameters || [], authenticated));
+    const node = new RouteTreeNode(new RouteData(routeConfig.id, routeConfig.tagName, routeConfig.path, routeConfig.params || [], authenticated));
     if (routeConfig.subRoutes) {
       routeConfig.subRoutes.forEach(route => {
         node.addChild(this.buildRouteTree(route));
