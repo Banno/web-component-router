@@ -104,6 +104,39 @@ app.addChild(loginPage);
 export default app;
 ```
 
+### Defining a route configuration in the Router's constructor
+
+Alternatively you can pass a `routeConfig` object when instantiating your router.  This will use the `RouteTreeNode` and `RouteData` to create your applications routeTree.
+
+**Example RouteConfig object**
+```
+const routeConfig = {
+    id: 'app',
+    tagName: 'APP-MAIN',
+    path: '',
+    subRoutes: [{
+        id: 'app-user',
+        tagName: 'APP-USER-PAGE',
+        path: '/users/:userId([0-9]{1,6})',
+        params: ['userId'],
+    }, {
+        id: 'app-user-account',
+        tagName: 'APP-ACCOUNT-PAGE',
+        path: '/users/:userId([0-9]{1,6})/accounts/:accountId([0-9]{1,6})',
+        params: ['userId', 'accountId'],
+    }, {
+      id: 'app-about',
+      tagName: 'APP-ABOUT',
+      path: '/about',
+      authenticated: false,
+    }]
+};
+
+const router = New Router(routeConfig);
+```
+
+When using this method the default is that a route requires authentication, as shown above in the 'about' route, set `authenticated` to false to create a route which does not require authentication.
+
 ## Redirecting
 
 To programmatically redirect to a page, use `router.go()`:
@@ -151,7 +184,7 @@ class MyElement extends HtmlElement {
     // do something with the node
     const currentElement = currentNode.getValue().element;
   }
-  
+
   /**
    * Implementation for the callback on exiting a route node.
    * This method is ONLY called if this element is not being
@@ -209,18 +242,18 @@ import router, {Context, routingMixin} from '@jack-henry/web-component-router';
 
 class AppElement extends routingMixin(Polymer.Element) {
   static get is() { return 'app-element'; }
-  
+
   connectedCallback() {
     super.connectedCallback();
 
     router.routeTree = myAppRouteTree;
     // Define this instance as the root element
     router.routeTree.getValue().element = this;
-    
+
     // Start routing
     router.start();
   }
-  
+
   async routeEnter(currentNode, nextNodeIfExists, routeId, context) {
     context.handled = true;
     const destinationNode = router.routeTree.getNodeByKey(routeId);
@@ -228,15 +261,15 @@ class AppElement extends routingMixin(Polymer.Element) {
       // carry on. user is authenticated or doesn't need to be.
       return super.routeEnter(currentNode, nextNodeIfExists, routeId, context);
     }
-    
+
     // Redirect to the login page
     router.go('/login');
-    
+
     // Don't continue routing - we have redirected to the
     // login page
     return false;
   }
-  
+
   async routeExit(currentNode, nextNode, routeId, context) {
     // This method should never be called. The main app element
     // should never be on an exit path as it should always be in
@@ -260,21 +293,21 @@ import router, {routingMixin} from '@jack-henry/web-component-router';
 
 class AppElement extends routingMixin(Polymer.Element) {
   static get is() { return 'app-element'; }
-  
+
   connectedCallback() {
     super.connectedCallback();
 
     router.routeTree = myAppRouteTree;
     // Define this instance as the root element
     router.routeTree.getValue().element = this;
-    
+
     // Save the scroll position for every route exit
     router.addGlobalExitHandler(this.saveScrollPosition_.bind(this));
-    
+
     // Start routing
     router.start();
   }
-  
+
   /**
    * @param {!Context} context
    * @param {function(boolean=)} next
@@ -287,7 +320,7 @@ class AppElement extends routingMixin(Polymer.Element) {
     }
     next();
   }
-  
+
   async routeEnter(currentNode, nextNodeIfExists, routeId, context) {
     // Restoring the scroll position needs to be async
     setTimeout(() => {
@@ -346,7 +379,7 @@ router.addGlobalExitHandler(callback);
 router.addRouteChangeStartCallback(callback);
 
 /**
- * Unregister a callback function 
+ * Unregister a callback function
  * @param {!Function} callback
  */
 router.removeRouteChangeStartCallback(callback);

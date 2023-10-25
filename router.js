@@ -15,6 +15,16 @@
  *  B  C       E
  */
 
+/**
+ * @typedef {Object} RouteConfig
+ * @property {string} id
+ * @property {string} tagName
+ * @property {string} path
+ * @property {Array<string>=} parameters
+ * @property {boolean=} authenticated
+ * @property {Array<RouteConfig>=} subRoutes
+ */
+
 import {Context, Page} from './lib/page.js';
 import RouteTreeNode from './lib/route-tree-node.js';
 import routingMixin from './lib/routing-mixin.js';
@@ -23,7 +33,8 @@ import BasicRoutingInterface from './lib/routing-interface.js';
 import RouteData from './lib/route-data.js';
 
 class Router {
-  constructor() {
+  /** @param {RouteConfig=} routeConfig */
+  constructor(routeConfig) {
     /** @type {string|undefined} */
     this.currentNodeId_;
 
@@ -31,7 +42,7 @@ class Router {
     this.prevNodeId_;
 
     /** @type {!RouteTreeNode|undefined} */
-    this.routeTree_;
+    this.routeTree_ = routeConfig ? this.buildRouteTree(routeConfig) : undefined;
 
     this.nextStateWasPopped = false;
 
@@ -66,6 +77,18 @@ class Router {
   /** @return {string|undefined} */
   get prevNodeId() {
     return this.prevNodeId_;
+  }
+
+  /** @param {!RouteConfig} routeConfig */
+  buildRouteTree(routeConfig) {
+    const authenticated = [true, false].includes(routeConfig.authenticated) ?  routeConfig.authenticated : true;
+    const node = new RouteTreeNode(new RouteData(routeConfig.id, routeConfig.tagName, routeConfig.path, routeConfig.parameters || [], authenticated));
+    if (routeConfig.subRoutes) {
+      routeConfig.subRoutes.forEach(route => {
+        node.addChild(this.buildRouteTree(route));
+      });
+    }
+    return node;
   }
 
   /**

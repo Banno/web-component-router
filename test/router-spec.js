@@ -11,6 +11,7 @@
  */
 
 import testRouteTree from './utils/testing-route-setup.js';
+import testRouteConfig from './utils/test-route-config.js';
 import Router, {Context, RouteTreeNode} from '../router.js';
 import RoutedElement from './fixtures/custom-fixture.js';
 
@@ -19,7 +20,7 @@ function JSCompiler_renameProperty(propName, instance) {
 }
 
 describe('Router', () => {
-  const router = new Router();
+  let router = new Router();
 
   const A = testRouteTree.tree.getNodeByKey(testRouteTree.Id.A);
   const B = testRouteTree.tree.getNodeByKey(testRouteTree.Id.B);
@@ -84,6 +85,63 @@ describe('Router', () => {
 
   it('should store the previous route id', () => {
     expect(router.currentNodeId_).toBe(testRouteTree.Id.B);
+  });
+
+  describe('Router constructor', () => {
+    afterAll(() => {
+      // reset routeTree
+      router = new Router();
+    });
+
+    it('should leave the routeTree undefined if instantiated without a route configuration', () => {
+      router = new Router();
+      expect(router.routeTree).toBe(undefined);
+    });
+
+    it('should create the routeTree when instantiated with the route configuration', () => {
+      router = new Router(testRouteConfig);
+      expect(router.routeTree).not.toBe(undefined);
+    });
+  });
+
+  describe('buildRouteTree', () => {
+    const testSubRouteData = [{
+        id: 'app-user',
+        tagName: 'APP-USER-PAGE',
+        path: '/users/:userId([0-9]{1,6})',
+        requiresAuthentication: true,
+    }, {
+        id: 'app-user-account',
+        tagName: 'APP-ACCOUNT-PAGE',
+        path: '/users/:userId([0-9]{1,6})/accounts/:accountId([0-9]{1,6})',
+        requiresAuthentication: true,
+    }, {
+      id: 'app-about',
+      tagName: 'APP-ABOUT',
+      path: '/about',
+      requiresAuthentication: false,
+    }];
+
+    it('should create a routeTree with the correct properties', () => {
+      const routeTree = router.buildRouteTree(testRouteConfig);
+      const subRoutes = routeTree.getChildren();
+      expect(routeTree.requiresAuthentication()).toBe(true);
+      expect(routeTree.getKey()).toBe('app');
+      expect(subRoutes.length).toBe(3);
+      subRoutes.forEach((route, index) => {
+        const data = route.getValue();
+        ['id', 'tagName', 'path', 'requiresAuthentication'].forEach((prop) => {
+          expect(data[prop]).toBe(testSubRouteData[index][prop]);
+        })
+      });
+    });
+
+    it('should set authentication to true by default', () => {
+      const routeTree = router.buildRouteTree(testRouteConfig);
+      const subRoutes = routeTree.getChildren();
+      expect(subRoutes[0].getValue().requiresAuthentication).toBe(true);
+      expect(subRoutes[2].getValue().requiresAuthentication).toBe(false);
+    });
   });
 
   describe('url()', () => {
