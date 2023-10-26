@@ -110,11 +110,13 @@ describe('Router', () => {
         tagName: 'APP-USER-PAGE',
         path: '/users/:userId([0-9]{1,6})',
         requiresAuthentication: true,
+        params: ['userId'],
     }, {
         id: 'app-user-account',
         tagName: 'APP-ACCOUNT-PAGE',
         path: '/users/:userId([0-9]{1,6})/accounts/:accountId([0-9]{1,6})',
         requiresAuthentication: true,
+        params: ['userId', 'accountId'],
     }, {
       id: 'app-about',
       tagName: 'APP-ABOUT',
@@ -130,9 +132,13 @@ describe('Router', () => {
       expect(subRoutes.length).toBe(3);
       subRoutes.forEach((route, index) => {
         const data = route.getValue();
+        if (testSubRouteData[index].params) {
+          expect(Object.keys(data.attributes)).toEqual(testSubRouteData[index].params);
+        }
         ['id', 'tagName', 'path', 'requiresAuthentication'].forEach((prop) => {
           expect(data[prop]).toBe(testSubRouteData[index][prop]);
-        })
+        });
+
       });
     });
 
