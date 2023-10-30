@@ -115,10 +115,11 @@ class Router {
    * Navigate to the specified route
    * @param {string} path
    * @param {Object=} params Values to use for named & query parameters
+   * @returns {!Promise<!Context>}
    */
-  go(path, params) {
+  async go(path, params) {
     path = this.url(path, params);
-    this.page.show(path);
+    return this.page.show(path);
   }
 
   /**
