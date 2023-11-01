@@ -206,7 +206,8 @@ describe('Router', () => {
 
   describe('go()', () => {
     beforeEach(() => {
-      spyOn(router.page, JSCompiler_renameProperty('show', router.page));
+      spyOn(router.page, JSCompiler_renameProperty('show', router.page)).
+        and.callFake(async (path) => new Context(path));
     });
 
     it('should navigate to the given path', () => {
@@ -221,7 +222,13 @@ describe('Router', () => {
       });
       expect(router.page.show).toHaveBeenCalledWith('/account/1234/documents/6789');
     });
+    it('should resolve to a Context', async () => {
+      const rp = await router.go('/A');
+      expect(rp instanceof Context);
+    });
   });
+
+
 
   describe('query context', () => {
     afterEach(() => {
