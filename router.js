@@ -16,14 +16,16 @@
  */
 
 /**
- * @typedef {Object} RouteConfig
- * @property {string} id
- * @property {string} tagName
- * @property {string} path
- * @property {Array<string>=} params
- * @property {boolean=} authenticated
- * @property {Array<RouteConfig>=} subRoutes
+ * @typedef {{
+ *  id: string,
+ *  tagName: string,
+ *  path: string,
+ *  params: (Array<string>|undefined),
+ *  authenticated: (boolean|undefined),
+ *  subRoutes: (Array<RouteConfig>|undefined),
+ * }}
  */
+let RouteConfig;
 
 import {Context, Page} from './lib/page.js';
 import RouteTreeNode from './lib/route-tree-node.js';
