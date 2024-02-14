@@ -23,7 +23,7 @@
  *  params: (Array<string>|undefined),
  *  authenticated: (boolean|undefined),
  *  subRoutes: (Array<RouteConfig>|undefined),
- * }}
+ * }} RouteConfig
  */
 let RouteConfig;
 
