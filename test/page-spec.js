@@ -26,7 +26,7 @@ describe('Page', () => {
     });
     describe('when dispatch === false', () => {
       const dispatch = false;
-      it('does not call dispatch(ctx, prev, push)', async () => {
+      it('does not call dispatch(ctx, prev)', async () => {
         await page.show(path, state, dispatch, push);
         expect(page.dispatch).not.toHaveBeenCalled();
       });
@@ -49,8 +49,8 @@ describe('Page', () => {
       const dispatch = true;
       it('calls dispatch(ctx, prev, push)', () => {
         const prev = page.prevContext;
-        page.show(path, state, dispatch, push);
-        expect(page.dispatch).toHaveBeenCalledWith(jasmine.any(Context), prev, push);
+        page.show(path, state, dispatch);
+        expect(page.dispatch).toHaveBeenCalledWith(jasmine.any(Context), prev);
       });
       describe('when push === false', () => {
         const push = false;
@@ -62,39 +62,39 @@ describe('Page', () => {
     });
   });
 
-  describe('dispatch(ctx, prev, push)', () => {
+  describe('dispatch(ctx, prev)', () => {
     let ctx;
     let prev;
     const state = {};
     const prevState = {};
     beforeEach(() => {
-      ctx = new Context('/next', state, page);
-      prev = new Context('/prev', prevState, page);
       // add entry callback to handle context to ensure that the `unhandled` callback doesn't do a full page reload
       page.callbacks.push((ctx, next) => { ctx.handled = true; next(); });
     });
     describe('when push === true and ctx.path === page.current', () => {
       const push = true;
       beforeEach(() => {
+        ctx = new Context('/next', state, page, push);
+        prev = new Context('/prev', prevState, page, push);
         page.current = ctx.path;
       })
       it('calls context.pushState() asynchronously between exit and entry callbacks', async () => {
         const exitCallback = (ctx, next) => {
-          // expect `pushState` to have been called before entry callback
           expect(Context.prototype.pushState).not.toHaveBeenCalled(); // not yet
           ctx.state['exitCallbackCalled'] = true;
           next();
         }
         const entryCallback = (ctx, next) => {
-          // expect `pushState` to have been called before entry callback
-          expect(Context.prototype.pushState).toHaveBeenCalled();
+          expect(Context.prototype.pushState).not.toHaveBeenCalled(); // still not yet
           ctx.handled = true;
+          // expect `pushState` to have been called when `handled` is changed from not true to `true`
+          expect(Context.prototype.pushState).toHaveBeenCalled();
           next();
         }
-        page.exits.push(exitCallback);
-        page.callbacks.push(entryCallback);
+        page.exits = [exitCallback];
+        page.callbacks = [entryCallback];
 
-        const dispatchPromise = page.dispatch(ctx, prev, push);
+        const dispatchPromise = page.dispatch(ctx, prev);
         expect(ctx.handled).toBe(undefined); // entry callback should not have been called yet
         await dispatchPromise;
         expect(prevState['exitCallbackCalled']).toBe(true); // exit handler should have been called
