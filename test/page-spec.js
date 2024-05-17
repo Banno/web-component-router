@@ -67,8 +67,8 @@ describe('Page', () => {
     const state = {};
     const prevState = {};
     beforeEach(() => {
-      ctx = new Context('/next', state, page);
-      prev = new Context('/prev', prevState, page);
+      ctx = new Context('/next', {...state}, page);
+      prev = new Context('/prev', {...prevState}, page);
       // add entry callback to handle context to ensure that the `unhandled` callback doesn't do a full page reload
       page.callbacks.push((ctx, next) => { ctx.handled = true; next(); });
     });
@@ -86,7 +86,7 @@ describe('Page', () => {
       page.exits = [exitCallback1, exitCallback2];
       expect(prev.state['exitCallback1Called']).toBe(undefined);
       expect(prev.state['exitCallback2Called']).toBe(undefined);
-      await page.dispatch(ctx, prev);;
+      await page.dispatch(ctx, prev);
       expect(prev.state['exitCallback1Called']).toBe(true);
       expect(prev.state['exitCallback2Called']).toBe(true);
     });
@@ -106,9 +106,32 @@ describe('Page', () => {
       page.callbacks = [entryCallback1, entryCallback2];
       expect(ctx.state['entryCallback1Called']).toBe(undefined);
       expect(ctx.state['entryCallback2Called']).toBe(undefined);
-      await page.dispatch(ctx, prev);;
+      await page.dispatch(ctx, prev);
       expect(ctx.state['entryCallback1Called']).toBe(true);
       expect(ctx.state['entryCallback2Called']).toBe(true);
+    });
+
+    describe('when at least one entry callback sets ctx.handled = true', () => {
+      it('does not reset ctx.handled = false', async () => {
+        const entryCallback1 = (ctx, next) => {
+          ctx.handled = true;
+          ctx.state['entryCallback1Called'] = true;
+          expect(ctx.state['entryCallback2Called']).toBe(undefined);
+          next();
+        }
+        const entryCallback2 = (ctx, next) => {
+          expect(ctx.state['entryCallback1Called']).toBe(true);
+          expect(ctx.handled).toBe(true);
+          ctx.state['entryCallback2Called'] = true;
+          next();
+        }
+        page.callbacks = [entryCallback1, entryCallback2];
+        expect(ctx.state['entryCallback1Called']).toBe(undefined);
+        expect(ctx.state['entryCallback2Called']).toBe(undefined);
+        await page.dispatch(ctx, prev);
+        expect(ctx.state['entryCallback1Called']).toBe(true);
+        expect(ctx.state['entryCallback2Called']).toBe(true);
+      });
     });
     describe('when ctx.pushState === true and ctx.path === page.current', () => {
       const push = true;
