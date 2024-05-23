@@ -1,0 +1,9 @@
+
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "emitDeclarationOnly": false,
+  },
+  "include": ["lib/routing.mixin.ts", "lib/animated-routing.mixin.ts"],
+}
