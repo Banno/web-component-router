@@ -3,13 +3,6 @@ import type RouteTreeNode from './route-tree-node.js';
 import {type Context} from './page.js';
 import {RoutingMixin, type Constructor, type RoutingMixinInterface} from './routing.mixin.js';
 
-// type Constructor<T = {}> = new (...args: any[]) => T;
-
-// export declare class RoutingMixinInterface {
-//   routeEnter(currentNode: RouteTreeNode, nextNodeIfExists: RouteTreeNode | undefined, routeId: string, context: Context): Promise<boolean | void>;
-//   routeExit(currentNode: RouteTreeNode, nextNode: RouteTreeNode | undefined, routeId: string, context: Context): Promise<boolean | void>;
-// }
-
 function animatedRoutingMixin<T extends Constructor<LitElement>>(Superclass:T, className:string) {
 
   class AnimatedRouting extends RoutingMixin(Superclass) {
