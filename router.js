@@ -95,15 +95,15 @@ class Router {
 
   /**
    * Build the routing tree and begin routing
-   * @return {void}
+   * @return {!Promise<undefined>}
    */
-  start() {
+  async start() {
     this.registerRoutes_();
 
     document.addEventListener('tap', this.page.clickHandler.bind(this.page), false);
     document.addEventListener('click', this.page.clickHandler.bind(this.page), false);
 
-    this.page.start({
+    return this.page.start({
       click: false,
       popstate: true,
       hashbang: false,
@@ -129,10 +129,11 @@ class Router {
    * @param {string} path
    * @param {Object=} params Values to use for named & query parameters
    *   NOTE: You must quote the properties so that Closure Compiler does not rename them!
+   * @return {!Promise<!Context>}
    */
-  redirect(path, params) {
+  async redirect(path, params) {
     path = this.url(path, params);
-    this.page.replace(path);
+    return this.page.replace(path);
   }
 
   /**
