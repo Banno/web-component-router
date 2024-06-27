@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/Banno/web-component-router",
   "dependencies": {
-    "path-to-regexp": "^6.2.1"
+    "path-to-regexp": "^7.0.0"
   },
   "resolutions": {
     "@types/node": "^18.11.18",
