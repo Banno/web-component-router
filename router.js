@@ -253,6 +253,12 @@ class Router {
    * @private
    */
   async routeChangeCallback_(routeTreeNode, context, next) {
+    const { routePath, handled } = context;
+
+    if (routePath === '(.*)' && handled) {
+      return;
+    }
+
     for (const cb of this.routeChangeStartCallbacks_) {
       cb();
     }

@@ -57,5 +57,7 @@ ROOT.addChild(D);
 
 export default {
   tree: ROOT,
-  Id: RouteId
+  Id: RouteId,
+  activate: async () => null,
+  getKey: () => 'test',
 };
