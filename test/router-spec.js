@@ -328,4 +328,35 @@ describe('Router', () => {
       expect(A.getValue().element.getElementsByTagName(testRouteTree.Id.B).length).toBe(0);
     });
   });
+
+  describe('404 route', () => {
+    beforeAll(() => {
+      spyOn(testRouteTree, 'activate').and.callThrough();
+      router.routeChangeCompleteCallbacks_.add(() => {});
+    });
+
+    it('should not call route activate if the context has been handled and the route is (.*)', async () => {
+      const context = { handled: true, routePath: '(.*)'}
+      router.routeChangeCallback_(testRouteTree, context, () => null);
+      expect(testRouteTree.activate).not.toHaveBeenCalled();
+    });
+
+    it('should call route activate if the context has NOT been handled and the route is (.*)', async () => {
+      const context = { handled: false, routePath: '(.*)'}
+      router.routeChangeCallback_(testRouteTree, context, () => null);
+      expect(testRouteTree.activate).toHaveBeenCalled();
+    });
+
+    it('should call route activate if the context has been handled BUT the route is NOT (.*)', async () => {
+      const context = { handled: true, routePath: '/'}
+      router.routeChangeCallback_(testRouteTree, context, () => null);
+      expect(testRouteTree.activate).toHaveBeenCalled();
+    });
+
+    it('should call route activate if the context has NOT been handled AND the route is NOT (.*)', async () => {
+      const context = { handled: false, routePath: '/'}
+      router.routeChangeCallback_(testRouteTree, context, () => null);
+      expect(testRouteTree.activate).toHaveBeenCalled();
+    });
+  })
 });
