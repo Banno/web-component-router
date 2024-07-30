@@ -253,11 +253,16 @@ class Router {
    * @private
    */
   async routeChangeCallback_(routeTreeNode, context, next) {
+    if (context.handled) {
+      return;
+    }
     for (const cb of this.routeChangeStartCallbacks_) {
       cb();
     }
+
     this.prevNodeId_ = this.currentNodeId_;
     this.currentNodeId_ = routeTreeNode.getKey();
+
     /** @type {!Error|undefined} */
     let routeError;
     try {
