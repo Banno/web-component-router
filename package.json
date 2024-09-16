@@ -1,6 +1,6 @@
 {
   "name": "@jack-henry/web-component-router",
-  "version": "3.4.0",
+  "version": "3.6.0",
   "description": "Web Components Router",
   "main": "router.js",
   "type": "module",
