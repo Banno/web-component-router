@@ -19,7 +19,7 @@ jobs:
     - name: run tests
       uses: actions/setup-node@v4
       with:
-        node-version: '18.x'
+        node-version: '20.x'
     - run: yarn install
     - run: npx playwright install --with-deps chromium
     - run: CI=1 yarn test
