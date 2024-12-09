@@ -23,6 +23,7 @@
  *  params: (Array<string>|undefined),
  *  authenticated: (boolean|undefined),
  *  subRoutes: (Array<RouteConfig>|undefined),
+ *  importFunction: (Function|undefined)
  * }} RouteConfig
  */
 let RouteConfig;
@@ -84,7 +85,7 @@ class Router {
   /** @param {!RouteConfig} routeConfig */
   buildRouteTree(routeConfig) {
     const authenticated = [true, false].includes(routeConfig.authenticated) ?  routeConfig.authenticated : true;
-    const node = new RouteTreeNode(new RouteData(routeConfig.id, routeConfig.tagName, routeConfig.path, routeConfig.params || [], authenticated));
+    const node = new RouteTreeNode(new RouteData(routeConfig.id, routeConfig.tagName, routeConfig.path, routeConfig.params || [], authenticated, routeConfig.importFunction));
     if (routeConfig.subRoutes) {
       routeConfig.subRoutes.forEach(route => {
         node.addChild(this.buildRouteTree(route));
@@ -253,6 +254,7 @@ class Router {
    * @private
    */
   async routeChangeCallback_(routeTreeNode, context, next) {
+    console.log('changeCallback', routeTreeNode, context, next)
     for (const cb of this.routeChangeStartCallbacks_) {
       cb();
     }
