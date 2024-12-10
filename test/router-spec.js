@@ -111,6 +111,7 @@ describe('Router', () => {
         path: '/users/:userId([0-9]{1,6})',
         requiresAuthentication: true,
         params: ['userId'],
+        importFunction: () => Promise.resolve(),
     }, {
         id: 'app-user-account',
         tagName: 'APP-ACCOUNT-PAGE',
@@ -134,6 +135,9 @@ describe('Router', () => {
         const data = route.getValue();
         if (testSubRouteData[index].params) {
           expect(Object.keys(data.attributes)).toEqual(testSubRouteData[index].params);
+        }
+        if (testSubRouteData[index].importFunction) {
+          expect(data.importFunction).not.toBe(undefined);
         }
         ['id', 'tagName', 'path', 'requiresAuthentication'].forEach((prop) => {
           expect(data[prop]).toBe(testSubRouteData[index][prop]);

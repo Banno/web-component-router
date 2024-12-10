@@ -7,6 +7,7 @@ const testRouteConfig = {
         tagName: 'APP-USER-PAGE',
         path: '/users/:userId([0-9]{1,6})',
         params: ['userId'],
+        importFunction: () => Promise.resolve(),
     }, {
         id: 'app-user-account',
         tagName: 'APP-ACCOUNT-PAGE',

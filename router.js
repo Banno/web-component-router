@@ -23,7 +23,7 @@
  *  params: (Array<string>|undefined),
  *  authenticated: (boolean|undefined),
  *  subRoutes: (Array<RouteConfig>|undefined),
- *  importFunction: (Function|undefined)
+ *  importFunction: (function():Promise<undefined>|undefined)
  * }} RouteConfig
  */
 let RouteConfig;
@@ -254,7 +254,6 @@ class Router {
    * @private
    */
   async routeChangeCallback_(routeTreeNode, context, next) {
-    console.log('changeCallback', routeTreeNode, context, next)
     for (const cb of this.routeChangeStartCallbacks_) {
       cb();
     }
