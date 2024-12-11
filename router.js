@@ -23,7 +23,7 @@
  *  params: (Array<string>|undefined),
  *  authenticated: (boolean|undefined),
  *  subRoutes: (Array<RouteConfig>|undefined),
- *  importFunction: (function():Promise<undefined>|undefined)
+ *  beforeEnter: (function():Promise<undefined>|undefined)
  * }} RouteConfig
  */
 let RouteConfig;
@@ -85,7 +85,7 @@ class Router {
   /** @param {!RouteConfig} routeConfig */
   buildRouteTree(routeConfig) {
     const authenticated = [true, false].includes(routeConfig.authenticated) ?  routeConfig.authenticated : true;
-    const node = new RouteTreeNode(new RouteData(routeConfig.id, routeConfig.tagName, routeConfig.path, routeConfig.params || [], authenticated, routeConfig.importFunction));
+    const node = new RouteTreeNode(new RouteData(routeConfig.id, routeConfig.tagName, routeConfig.path, routeConfig.params || [], authenticated, routeConfig.beforeEnter));
     if (routeConfig.subRoutes) {
       routeConfig.subRoutes.forEach(route => {
         node.addChild(this.buildRouteTree(route));

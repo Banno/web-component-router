@@ -45,7 +45,7 @@ import RouteData from '@jack-henry/web-component-router/lib/route-data.js';
  *     These should match to named path segments. Each camel case name
  *     is converted to a hyphenated name to be assigned to the element.
  * @param {boolean=} requiresAuthentication (optional - defaults true)
- * @param {function():Promise<undefined>=} importFunction Optionally allows you to dynamically import the component for a given route.  The route-mixin.js will call your importFunction on routeEnter if the component does not exist in the dom.
+ * @param {function():Promise<undefined>=} beforeEnter Optionally allows you to dynamically import the component for a given route.  The route-mixin.js will call your beforeEnter on routeEnter if the component does not exist in the dom.
  */
 const routeData = new RouteData(
     'Name of this route',
@@ -121,19 +121,19 @@ const routeConfig = {
         tagName: 'APP-USER-PAGE',
         path: '/users/:userId([0-9]{1,6})',
         params: ['userId'],
-        importFunction: () => import('../app-user-page.js')
+        beforeEnter: () => import('../app-user-page.js')
     }, {
         id: 'app-user-account',
         tagName: 'APP-ACCOUNT-PAGE',
         path: '/users/:userId([0-9]{1,6})/accounts/:accountId([0-9]{1,6})',
         params: ['userId', 'accountId'],
-        importFunction: () => import('../app-account-page.js')
+        beforeEnter: () => import('../app-account-page.js')
     }, {
       id: 'app-about',
       tagName: 'APP-ABOUT',
       path: '/about',
       authenticated: false,
-      importFunction: () => import('../app-about.js')
+      beforeEnter: () => import('../app-about.js')
     }]
 };
 
