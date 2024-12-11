@@ -1,4 +1,5 @@
 import { Context, Page } from '../lib/page.js';
+import {vi, expect} from 'vitest';
 
 function JSCompiler_renameProperty(propName, instance) {
   return propName;
@@ -9,8 +10,8 @@ describe('Page', () => {
 
   beforeEach(() => {
     page = new Page();
-    spyOn(History.prototype, 'pushState').and.callFake(() => {});
-    spyOn(Context.prototype, 'pushState').and.callFake(() => {});
+    vi.spyOn(History.prototype, 'pushState');
+    vi.spyOn(Context.prototype, 'pushState');
   });
 
   const dispatchPropertyName = JSCompiler_renameProperty('dispatch', Page.prototype);
@@ -21,7 +22,7 @@ describe('Page', () => {
     const dispatch = true;
     const push = false;
     beforeEach(() => {
-      spyOn(page, dispatchPropertyName).and.callFake(async () => {});
+      vi.spyOn(page, dispatchPropertyName);
     });
     describe('when dispatch === false', () => {
       const dispatch = false;
@@ -49,7 +50,7 @@ describe('Page', () => {
       it('calls dispatch(ctx, prev, push)', () => {
         const prev = page.prevContext;
         page.show(path, state, dispatch);
-        expect(page.dispatch).toHaveBeenCalledWith(jasmine.any(Context), prev);
+        expect(page.dispatch).toHaveBeenCalledWith(expect.any(Context), prev);
       });
       describe('when push === false', () => {
         const push = false;

@@ -13,6 +13,7 @@
  */
 import testRouteTree from './utils/testing-route-setup.js';
 import {Context} from '../router.js';
+import {vi} from 'vitest';
 
 describe('RouteTreeNode', () => {
   const ROOT = testRouteTree.tree.getNodeByKey(testRouteTree.Id.ROOT);
@@ -80,7 +81,7 @@ describe('RouteTreeNode', () => {
     });
 
     it('returning "false" from the routeEnter method should prevent future methods from being invoked', async () => {
-      spyOn(A.getValue().element, 'routeEnter').and.callFake(function() {
+      vi.spyOn(A.getValue().element, 'routeEnter').mockImplementation(function() {
         routePath.push('A-enter');
         return Promise.resolve(false);
       });

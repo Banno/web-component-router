@@ -14,6 +14,7 @@ import testRouteTree from './utils/testing-route-setup.js';
 import testRouteConfig from './utils/test-route-config.js';
 import Router, {Context, RouteTreeNode} from '../router.js';
 import RoutedElement from './fixtures/custom-fixture.js';
+import {vi} from 'vitest';
 
 function JSCompiler_renameProperty(propName, instance) {
   return propName;
@@ -54,7 +55,7 @@ describe('Router', () => {
   });
 
   beforeEach(() => {
-    spyOn(router.page, startPropertyName).and.callThrough();
+    vi.spyOn(router.page, startPropertyName);
   });
 
   it('.start should register routes and start routing', () => {
@@ -72,12 +73,12 @@ describe('Router', () => {
     expect(router.currentNodeId_).toBe(undefined);
   });
 
-  it('callbacks should call router.routeChangeCallback_ with the correct this binding and arguments', (done) => {
+  it('callbacks should call router.routeChangeCallback_ with the correct this binding and arguments', async () => {
     newRouteChangeCallback = (function(node, ...args) {
       expect(args.length).toBe(2);
       expect(this instanceof router.constructor).toBe(true);
       expect(node instanceof RouteTreeNode).toBe(true);
-      done();
+
     }).bind(router);
 
     router.go('/B/somedata');
@@ -208,8 +209,8 @@ describe('Router', () => {
 
   describe('go()', () => {
     beforeEach(() => {
-      spyOn(router.page, JSCompiler_renameProperty('show', router.page)).
-        and.callFake(async (path) => new Context(path));
+      vi.spyOn(router.page, JSCompiler_renameProperty('show', router.page)).
+        mockImplementation(async (path) => new Context(path));
     });
 
     it('should navigate to the given path', () => {

@@ -15,9 +15,9 @@
   "scripts": {
     "build": "tsc && yarn build:ts",
     "build:ts": "tsc --project tsconfig.buildts.json",
-    "clean": "rimraf './lib/**/*.d.ts' && rimraf './*.d.ts' && rimraf './lib/*.mixin.js'",
+    "clean": "rimraf ./lib/**/*.d.ts ./*.d.ts ./lib/*.mixin.js --glob",
     "prepublish": "yarn clean && yarn build",
-    "test": "karma start test/karma.config.cjs --single-run"
+    "test": "vitest"
   },
   "repository": {
     "type": "git",
@@ -33,18 +33,16 @@
     "path-to-regexp": "^6.2.1"
   },
   "resolutions": {
-    "@types/node": "^18.11.18",
-    "socket.io-parser": "^4.2.3",
-    "qs": "^6.7.3",
-    "engine.io": "^6.4.2"
+    "@types/node": "^18.11.18"
   },
   "devDependencies": {
     "@polymer/polymer": "^3.4.1",
-    "jasmine-core": "^5.x",
-    "karma": "^6.x",
-    "karma-chrome-launcher": "^3.2.0",
-    "karma-jasmine": "5.x",
-    "karma-spec-reporter": "^0.0.36",
-    "typescript": "^5.2.2"
+    "@types/node": "^22.10.0",
+    "@vitest/browser": "^2.1.6",
+    "playwright": "1.49.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.2.2",
+    "vite": "6.0.0",
+    "vitest": "^2.1.6"
   }
 }
