@@ -23,7 +23,7 @@
  *  params: (Array<string>|undefined),
  *  authenticated: (boolean|undefined),
  *  subRoutes: (Array<RouteConfig>|undefined),
- *  beforeEnter: (function():Promise<undefined>|undefined)
+ *  beforeEnter?: (function():Promise<unknown>|undefined)
  * }} RouteConfig
  */
 let RouteConfig;
