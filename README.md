@@ -45,7 +45,7 @@ import RouteData from '@jack-henry/web-component-router/lib/route-data.js';
  *     These should match to named path segments. Each camel case name
  *     is converted to a hyphenated name to be assigned to the element.
  * @param {boolean=} requiresAuthentication (optional - defaults true)
- * @param {function():Promise<undefined>=} beforeEnter Optionally allows you to dynamically import the component for a given route.  The route-mixin.js will call your beforeEnter on routeEnter if the component does not exist in the dom.
+ * @param {function():(Promise<unknown>|undefined)=} beforeEnter Optionally allows you to dynamically import the component for a given route.  The route-mixin.js will call your beforeEnter on routeEnter if the component does not exist in the dom.
  */
 const routeData = new RouteData(
     'Name of this route',
