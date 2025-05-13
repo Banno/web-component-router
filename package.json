@@ -1,6 +1,6 @@
 {
   "name": "@jack-henry/web-component-router",
-  "version": "3.10.0",
+  "version": "3.11.0",
   "description": "Web Components Router",
   "main": "router.js",
   "type": "module",
@@ -17,6 +17,7 @@
     "build:ts": "tsc --project tsconfig.buildts.json",
     "clean": "rimraf ./lib/**/*.d.ts ./*.d.ts ./lib/*.mixin.js --glob",
     "prepublish": "yarn clean && yarn build",
+    "pretest": "playwright install",
     "test": "vitest"
   },
   "repository": {
@@ -30,7 +31,7 @@
   },
   "homepage": "https://github.com/Banno/web-component-router",
   "dependencies": {
-    "path-to-regexp": "^6.2.1"
+    "path-to-regexp": "^6.3.0"
   },
   "resolutions": {
     "@types/node": "^18.11.18"
@@ -39,7 +40,7 @@
     "@polymer/polymer": "^3.4.1",
     "@types/node": "^22.10.0",
     "@vitest/browser": "^2.1.6",
-    "playwright": "1.50.1",
+    "playwright": "1.52.0",
     "rimraf": "^6.0.1",
     "typescript": "^5.2.2",
     "vitest": "^2.1.6"
