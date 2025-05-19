@@ -146,19 +146,28 @@ const routeConfig = {
     id: 'app',
     tagName: 'APP-MAIN',
     path: '',
+    beforeEnter: (currentNode, nextNodeIfExists, routeId, context) => {
+			await setupServices();
+    }
+    routeEnter: (currentNode, nextNodeIfExists, routeId, context) => {
+      doSomething();
+    }
+    routeExit: (currentNode, nextNode, routeId, context) => {
+      teardownServices();
+    }
     subRoutes: [{
         id: 'app-user',
         tagName: 'APP-USER-PAGE',
         path: '/users/:userId([0-9]{1,6})',
         params: ['userId'],
-        beforeEnter: () => {
+        beforeEnter: (currentNode, nextNodeIfExists, routeId, context) => {
         	isAuthorized();
         	import('../app-user-page.js')
         }
-        routeEnter: () => {
+        routeEnter: (currentNode, nextNodeIfExists, routeId, context) => {
         	doSomething();
         }
-        routeExit: () => {
+        routeExit: (currentNode, nextNode, routeId, context) => {
         	saveDataToCache();
         }
     }, {
@@ -166,14 +175,14 @@ const routeConfig = {
         tagName: 'APP-ACCOUNT-PAGE',
         path: '/users/:userId([0-9]{1,6})/accounts/:accountId([0-9]{1,6})',
         params: ['userId', 'accountId'],
-        beforeEnter: () => {
+        beforeEnter: (currentNode, nextNodeIfExists, routeId, context) => {
         	isAuthorized();
         	import('../app-account-page.js')
         }
-        routeEnter: () => {
+        routeEnter: (currentNode, nextNodeIfExists, routeId, context) => {
         	doSomething();
         }
-        routeExit: () => {
+        routeExit: (currentNode, nextNode, routeId, context) => {
         	saveDataToCache();
         }
     }, {
@@ -181,14 +190,14 @@ const routeConfig = {
       tagName: 'APP-ABOUT',
       path: '/about',
       authenticated: false,
-      beforeEnter: () => {
+      beforeEnter: (currentNode, nextNodeIfExists, routeId, context) => {
         isAuthorized();
         import('../app-about.js);
       }
-      routeEnter: () => {
+      routeEnter: (currentNode, nextNodeIfExists, routeId, context) => {
         doSomething();
       }
-      routeExit: () => {
+      routeExit: (currentNode, nextNode, routeId, context) => {
         saveDataToCache();
       }
     }]
