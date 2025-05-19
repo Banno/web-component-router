@@ -307,6 +307,35 @@ import animatedRouteMixin from '@jack-henry/web-component-router/animated-routin
 class MyElement extends animatedRouteMixin(HTMLElement, 'className') { }
 ```
 
+## Lifecycle Hook Execution Order
+
+The `@jack-henry/web-component-router` allows you to define lifecycle hooks at two levels:
+
+1. **Route Configuration:** Within the `RouteData` object or the equivalent properties in the route config object (`beforeEnter`, `routeEnter`, `routeExit`).
+2. **Component Methods:** By overriding the corresponding methods (`beforeEnter`, `routeEnter`, `routeExit`) in your web component, especially when using the `routingMixin`.
+
+When navigating between routes, the router executes these hooks in a specific, hierarchical order for each node in the route tree that is part of the transition (either entering or exiting).
+
+**During Route Entry:**
+
+When entering a new route, the following hooks are executed sequentially for each relevant node, starting from the top of the route tree down to the target node:
+
+1. `beforeEnter` function defined in the **Route Configuration** (`RouteData` or config object).
+2. `beforeEnter` method overridden on the **Component Instance**.
+3. `routeEnter` function defined in the **Route Configuration** (`RouteData` or config object).
+4. `routeEnter` method overridden on the **Component Instance**.
+
+**During Route Exit:**
+
+When exiting a route, the following hooks are executed sequentially for each relevant node, starting from the node being exited up towards the common ancestor node:
+
+1. `routeExit` method overridden on the **Component Instance**.
+2. `routeExit` function defined in the **Route Configuration** (`RouteData` or config object).
+
+This hierarchical execution allows you to perform actions specific to the route definition first (e.g., data fetching or component import in `beforeEnter` config), followed by component-specific logic in the overridden methods.
+
+Hooks can be defined in one or both locations. If a hook is defined in both the route configuration and the component, both will be called in the order specified above. If defined in only one location, only that definition will be executed for that specific hook and node.
+
 ## Root App Element
 
 The routing configuration is typically defined inside the main app element
@@ -318,7 +347,7 @@ The root element typically has a slightly different configuration.
 import myAppRouteTree from './route-tree.js';
 import router, {Context, routingMixin} from '@jack-henry/web-component-router';
 
-class AppElement extends routingMixin(Polymer.Element) {
+class AppElement extends routingMixin(LitElement) {
   static get is() { return 'app-element'; }
 	isAuthenticated = false;
   connectedCallback() {
@@ -372,7 +401,7 @@ issue.
 import myAppRouteTree from './route-tree.js';
 import router, {routingMixin} from '@jack-henry/web-component-router';
 
-class AppElement extends routingMixin(Polymer.Element) {
+class AppElement extends routingMixin(LitElement) {
   static get is() { return 'app-element'; }
 
   connectedCallback() {
