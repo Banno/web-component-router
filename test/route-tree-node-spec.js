@@ -33,6 +33,9 @@ describe('RouteTreeNode', () => {
       super();
       this.keyName = keyName;
     }
+    async beforeEnter(node, nextNode, routeId, context) {
+      routePath.push(`${this.keyName}-beforeEnter`);
+    }
     async routeEnter(node, nextNode, routeId, context) {
       routePath.push(`${this.keyName}-enter`);
     }
@@ -72,7 +75,7 @@ describe('RouteTreeNode', () => {
 
     it('activating a route should call the correct methods', async () => {
       await E.activate(B.getKey(), new Context('/D/E'));
-      expect(routePath.join('_')).toBe('B-exit_A-exit_ROOT-enter_D-enter_E-enter');
+      expect(routePath.join('_')).toBe('B-exit_A-exit_ROOT-beforeEnter_ROOT-enter_D-beforeEnter_D-enter_E-beforeEnter_E-enter');
     });
 
     it('activating a route should call the correct methods 2', async () => {
