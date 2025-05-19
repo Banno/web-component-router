@@ -35,6 +35,34 @@ Each node requires a `RouteData` object to describe it.
 ```js
 import RouteData from '@jack-henry/web-component-router/lib/route-data.js';
 /**
+ * @callback BeforeEnterFunction
+ * @param {!Object} currentNode - The current route node.
+ * @param {(Object|undefined)} nextNodeIfExists - The next route node, if one exists.
+ * @param {string} routeId - The ID of the route being entered.
+ * @param {!Object} context - A context object, potentially containing shared state or utilities.
+ * @returns {Promise<boolean|void>} Should return a Promise.
+ * Resolves to `true` or `void` to allow navigation.
+ * Resolves to `false` to prevent navigation.
+ *
+ * Defines the signature for the beforeEnter lifecycle hook.
+ * @callback RouteEnterFunction
+ * @param {!Object} currentNode - The current route node.
+ * @param {(Object|undefined)} nextNodeIfExists - The next route node, if one exists.
+ * @param {string} routeId - The ID of the route being entered.
+ * @param {!Object} context - A context object, potentially containing shared state or utilities.
+ * @returns {Promise<boolean|void>} Should return a Promise.
+ * Resolves to `true` or `void` to allow navigation.
+ * Resolves to `false` to prevent navigation.
+
+ * @callback RouteExitFunction
+ * @param {!Object} currentNode - The current route node.
+ * @param {(Object|undefined)} nextNode - The next route node, if one exists.
+ * @param {string} routeId - The ID of the route being exited.
+ * @param {!Object} context - A context object, potentially containing shared state or utilities.
+ * @returns {Promise<boolean|void>} Should return a Promise.
+ * Resolves to `true` or `void` to allow navigation.
+ * Resolves to `false` to prevent navigation.
+ *
  * @param {string} name of this route. Must be unique.
  * @param {string} tagName of the element. Case insensitive.
  * @param {string} path of this route (express style).
@@ -45,7 +73,9 @@ import RouteData from '@jack-henry/web-component-router/lib/route-data.js';
  *     These should match to named path segments. Each camel case name
  *     is converted to a hyphenated name to be assigned to the element.
  * @param {boolean=} requiresAuthentication (optional - defaults true)
- * @param {function():Promise=} beforeEnter Optionally allows you to dynamically import the component for a given route.  The route-mixin.js will call your beforeEnter on routeEnter if the component does not exist in the dom.
+ * @param {BeforeEnterFunction=} beforeEnter Optionally allows you to execute functionality before routeEnter such as importing the component for a given route. The router will call the beforeEnter on each node that has one defined.
+ * @param {RouteEnterFunction=} routeEnter Optionally allows you to execute functionality when the route is entered, after the element has been created and attached.
+ * @param {RouteExitFunction=} routeExit Optionally allows you to execute functionality when navigating away from this route.
  */
 const routeData = new RouteData(
     'Name of this route',
@@ -108,7 +138,7 @@ export default app;
 
 ### Defining a route configuration in the Router's constructor
 
-Alternatively you can pass a `routeConfig` object when instantiating your router.  This will use the `RouteTreeNode` and `RouteData` to create your applications routeTree.
+Alternatively you can pass a `routeConfig` object when instantiating your router.  This will use the `RouteTreeNode` and `RouteData` to create your applications routeTree. You can define the route lifecycle methods beforeEnter, routeEnter, and routeExit in both the RouteConfig and if using the RouterMixin as overriden methods
 
 **Example RouteConfig object**
 ```
@@ -121,23 +151,50 @@ const routeConfig = {
         tagName: 'APP-USER-PAGE',
         path: '/users/:userId([0-9]{1,6})',
         params: ['userId'],
-        beforeEnter: () => import('../app-user-page.js')
+        beforeEnter: () => {
+        	isAuthorized();
+        	import('../app-user-page.js')
+        }
+        routeEnter: () => {
+        	doSomething();
+        }
+        routeExit: () => {
+        	saveDataToCache();
+        }
     }, {
         id: 'app-user-account',
         tagName: 'APP-ACCOUNT-PAGE',
         path: '/users/:userId([0-9]{1,6})/accounts/:accountId([0-9]{1,6})',
         params: ['userId', 'accountId'],
-        beforeEnter: () => import('../app-account-page.js')
+        beforeEnter: () => {
+        	isAuthorized();
+        	import('../app-account-page.js')
+        }
+        routeEnter: () => {
+        	doSomething();
+        }
+        routeExit: () => {
+        	saveDataToCache();
+        }
     }, {
       id: 'app-about',
       tagName: 'APP-ABOUT',
       path: '/about',
       authenticated: false,
-      beforeEnter: () => import('../app-about.js')
+      beforeEnter: () => {
+        isAuthorized();
+        import('../app-about.js);
+      }
+      routeEnter: () => {
+        doSomething();
+      }
+      routeExit: () => {
+        saveDataToCache();
+      }
     }]
 };
 
-const router = New Router(routeConfig);
+const router = new Router(routeConfig);
 ```
 
 When using this method the default is that a route requires authentication, as shown above in the 'about' route, set `authenticated` to false to create a route which does not require authentication.
@@ -209,6 +266,22 @@ class MyElement extends HtmlElement {
     }
     currentNode.getValue().element = undefined;
   }
+  
+ /**
+   * Implementation for the callback on before entering a route node.
+   * beforeEnter is called for EVERY route change.
+   *
+   * @param {!RouteTreeNode} currentNode
+   * @param {!RouteTreeNode|undefined} nextNodeIfExists - the
+   *     child node of this route.
+   * @param {string} routeId - unique name of the route
+   * @param {!Context} context - page.js Context object
+   * @return {!Promise<boolean=>}
+   */
+  async beforeEnter(currentNode, nextNodeIfExists, routeId, context)
+  {
+    
+  }
 }
 ```
 
@@ -247,7 +320,7 @@ import router, {Context, routingMixin} from '@jack-henry/web-component-router';
 
 class AppElement extends routingMixin(Polymer.Element) {
   static get is() { return 'app-element'; }
-
+	isAuthenticated = false;
   connectedCallback() {
     super.connectedCallback();
 
@@ -258,11 +331,14 @@ class AppElement extends routingMixin(Polymer.Element) {
     // Start routing
     router.start();
   }
-
+  async beforeEnter(currentNode, nextNodeIfExists, routeId, context) {
+		//Fetch authentication
+    this.isAuthenticated = true;
+  }
   async routeEnter(currentNode, nextNodeIfExists, routeId, context) {
     context.handled = true;
     const destinationNode = router.routeTree.getNodeByKey(routeId);
-    if (isAuthenticated || !destinationNode.requiresAuthentication()) {
+    if (this.isAuthenticated || !destinationNode.requiresAuthentication()) {
       // carry on. user is authenticated or doesn't need to be.
       return super.routeEnter(currentNode, nextNodeIfExists, routeId, context);
     }
