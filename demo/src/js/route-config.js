@@ -2,20 +2,22 @@ export const ROUTE_IDS = {
   BASE: 'base',
   DASHBOARD: 'dashboard',
   SECTION_A: 'section-a',
-  SECTION_A2: 'section-a2',
+  SECTION_A1: 'section-a1',
   SECTION_B: 'section-b',
+  SECTION_B1: 'section-b1',
   SECTION_B2: 'section-b2',
-  SECTION_B3: 'section-b3',
+  SECTION_B2A: 'section-b2a',
 }
 
 export const ROUTE_PATHS = {
   BASE: '',
   DASHBOARD: '/',
   SECTION_A: '/section-a',
-  SECTION_A2: '/section-a/:id([a-z-]+)',
+  SECTION_A1: '/section-a/:sectionAId([a-z-]+)',
   SECTION_B: '/section-b',
-  SECTION_B2: '/section-b/:id([a-z-]+)',
-  SECTION_B3: '/section-b/:id([a-z-]+)/:id2([a-z-]+)',
+  SECTION_B1: '/section-b/b1/:sectionB1Id([a-z-]+)',
+  SECTION_B2: '/section-b/b2/:sectionB2Id([a-z-]+)',
+  SECTION_B2A: '/section-b/b2/:sectionB2Id([a-z-]+)/b2a/:sectionB2AId([a-z-]+)',
 }
 
 export const ROUTE_CONFIG = {
@@ -33,10 +35,10 @@ export const ROUTE_CONFIG = {
       tagName: 'section-a-route',
       subRoutes: [
         {
-          id: ROUTE_IDS.SECTION_A2,
-          path: ROUTE_PATHS.SECTION_A2,
-          tagName: 'section-a2-route',
-          params: ['id'],
+          id: ROUTE_IDS.SECTION_A1,
+          path: ROUTE_PATHS.SECTION_A1,
+          tagName: 'section-a1-route',
+          params: ['sectionAId'],
         }
       ],
     }, {
@@ -45,16 +47,22 @@ export const ROUTE_CONFIG = {
       tagName: 'section-b-route',
       subRoutes: [
         {
+          id: ROUTE_IDS.SECTION_B1,
+          path: ROUTE_PATHS.SECTION_B1,
+          tagName: 'section-b1-route',
+          params: ['sectionB1Id'],
+        },
+        {
           id: ROUTE_IDS.SECTION_B2,
           path: ROUTE_PATHS.SECTION_B2,
           tagName: 'section-b2-route',
-          params: ['id'],
+          params: ['sectionB2Id'],
           subRoutes: [
             {
-              id: ROUTE_IDS.SECTION_B3,
-              path: ROUTE_PATHS.SECTION_B3,
-              tagName: 'section-b3-route',
-              params: ['id', 'id2'],
+              id: ROUTE_IDS.SECTION_B2A,
+              path: ROUTE_PATHS.SECTION_B2A,
+              tagName: 'section-b2a-route',
+              params: ['sectionB2Id', 'sectionB2AId'],
             }
           ],
         }
