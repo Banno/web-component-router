@@ -11,6 +11,10 @@ By default, the router places child elements as the sole light-dom child
 of the parent (all other nodes are removed). Elements can override the
 `routeEnter` method functionality to customize this behavior.
 
+## Demo Example
+
+In the /demo directory, run `npm install && npm run dev` to see the router in a basic application.
+
 ## Installation
 
 ```
