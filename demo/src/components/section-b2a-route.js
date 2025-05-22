@@ -5,6 +5,7 @@ class SectionB2ARoute extends routingMixin(LitElement) {
   static styles = css`
     :host {
       display: block;
+
     }
   `;
 
@@ -29,13 +30,21 @@ class SectionB2ARoute extends routingMixin(LitElement) {
     this.activeRouteId = undefined;
     this.sectionB2Id = undefined;
     this.sectionB2AId = undefined;
+    console.log('SectionB2ARoute constructor');
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    console.log('SectionB2ARoute connectedCallback');
   }
 
   render() {
     return html`
         <p>Section b2a ID: <code>${this.sectionB2AId}</code></p>
         <p>As you'll see here, sub routes don't need to replace the main content of the page, but are inserted in the slot of the parent component.</p>
-        <a href=${`/section-b/b2/${this.sectionB2Id}`}>Back</a>
+        <p>You can change the url params of the route and the property will update, without switching out this route component.</p>
+        <p><a href="/section-b/b2/another/b2a/test">Section B2A with a different sectionB2AId</a></p>
+        <p><a href=${`/section-b/b2/${this.sectionB2Id}`}>Back</a></p>
     `;
   }
 }
