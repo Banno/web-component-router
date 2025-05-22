@@ -13,7 +13,7 @@ of the parent (all other nodes are removed). Elements can override the
 
 ## Demo Example
 
-In the /demo directory, run `npm install && npm run dev` to see the router in a basic application.
+In the /demo directory, run `yarn && yarn dev` to see the router in a basic application.
 
 ## Installation
 

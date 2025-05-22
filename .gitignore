@@ -1,5 +1,4 @@
-/node_modules/
-/demo/node_modules/
+node_modules
 yarn-error.log
 *.d.ts
 !types/index.d.ts

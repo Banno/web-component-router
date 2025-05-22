@@ -65,8 +65,7 @@ class BaseRoute extends routingMixin(LitElement) {
     super();
     this.activeRouteId = undefined;
     this.router = new Router(ROUTE_CONFIG);
-    this.router.routeTree.getValue().element = this;
-    this.router.start();
+    this.router.start(this);
   }
 
   async routeEnter(currentNode, nextNodeIfExists, routeId, context) {

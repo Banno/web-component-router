@@ -82,6 +82,14 @@ class Router {
     return this.prevNodeId_;
   }
 
+  get baseElement() {
+    return this.routeTree_ ? this.routeTree_.getValue().element : undefined;
+  }
+
+  set baseElement(element) {
+    this.routeTree_ ? this.routeTree_.getValue().element = element : undefined;
+  }
+
   /** @param {!RouteConfig} routeConfig */
   buildRouteTree(routeConfig) {
     const authenticated = [true, false].includes(routeConfig.authenticated) ?  routeConfig.authenticated : true;
@@ -96,9 +104,13 @@ class Router {
 
   /**
    * Build the routing tree and begin routing
+   * @param {Element=} baseElement The element to use as the base for routing
    * @return {!Promise<undefined>}
    */
-  async start() {
+  async start(baseElement = undefined) {
+    if (baseElement) {
+      this.baseElement = baseElement;
+    }
     this.registerRoutes_();
 
     document.addEventListener('tap', this.page.clickHandler.bind(this.page), false);

@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import {routingMixin} from '@jack-henry/web-component-router';
 
-class SectionB2ARoute extends routingMixin(LitElement) {
+class SectionB2ARoute extends LitElement {
   static styles = css`
     :host {
       display: block;
@@ -41,7 +41,7 @@ class SectionB2ARoute extends routingMixin(LitElement) {
   render() {
     return html`
         <p>Section b2a ID: <code>${this.sectionB2AId}</code></p>
-        <p>As you'll see here, sub routes don't need to replace the main content of the page, but are inserted in the slot of the parent component.</p>
+        <p>As you'll see here, sub routes don't need to replace the main content of the page, but are inserted in the default slot of the parent component.</p>
         <p>You can change the url params of the route and the property will update, without switching out this route component.</p>
         <p><a href="/section-b/b2/another/b2a/test">Section B2A with a different sectionB2AId</a></p>
         <p><a href=${`/section-b/b2/${this.sectionB2Id}`}>Back</a></p>
