@@ -1,8 +1,7 @@
 import { LitElement, html, css } from 'lit';
-import {routingMixin} from '@jack-henry/web-component-router';
 import './section-a1-route.js';
 
-class SectionARoute extends routingMixin(LitElement) {
+class SectionARoute extends LitElement {
   static styles = css`
     :host {
       display: block;
@@ -24,8 +23,8 @@ class SectionARoute extends routingMixin(LitElement) {
     this.activeRouteId = undefined;
   }
 
+  /** @type {import('@jack-henry/web-component-router/lib/routing-interface.js').RouteEnterFunction} */
   async routeEnter(currentNode, nextNodeIfExists, routeId, context) {
-    await super.routeEnter(currentNode, nextNodeIfExists, routeId, context);
     this.activeRouteId = routeId;
   }
 

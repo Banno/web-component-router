@@ -1,7 +1,6 @@
 import { LitElement, html, css } from 'lit';
-import {routingMixin} from '@jack-henry/web-component-router';
 
-class SectionB1Route extends routingMixin(LitElement) {
+class SectionB1Route extends LitElement {
   static styles = css`
     :host {
       display: block;
@@ -34,7 +33,6 @@ class SectionB1Route extends routingMixin(LitElement) {
   }
 
   async routeEnter(currentNode, nextNodeIfExists, routeId, context) {
-    await super.routeEnter(currentNode, nextNodeIfExists, routeId, context);
     this.activeRouteId = routeId;
   }
 

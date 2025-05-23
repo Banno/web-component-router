@@ -1,12 +1,11 @@
 import { LitElement, html, css } from 'lit';
 import Router from '@jack-henry/web-component-router';
-import {routingMixin} from '@jack-henry/web-component-router';
 import {ROUTE_CONFIG, ROUTE_IDS, ROUTE_PATHS} from '../js/route-config.js';
 import './dashboard-route.js';
 import './section-a-route.js';
 import './section-b-route.js';
 
-class BaseRoute extends routingMixin(LitElement) {
+class BaseRoute extends LitElement {
   static styles = css`
     :host {
       display: block;
@@ -69,7 +68,6 @@ class BaseRoute extends routingMixin(LitElement) {
   }
 
   async routeEnter(currentNode, nextNodeIfExists, routeId, context) {
-    await super.routeEnter(currentNode, nextNodeIfExists, routeId, context);
     // This method is called when entering a route
     console.log('Entering route:', routeId);
     console.log('Current node:', currentNode);
