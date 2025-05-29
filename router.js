@@ -30,8 +30,6 @@ let RouteConfig;
 
 import {Context, Page} from './lib/page.js';
 import RouteTreeNode from './lib/route-tree-node.js';
-import routingMixin from './lib/routing-mixin.js';
-import animatedRoutingMixin from './lib/animated-routing-mixin.js';
 import BasicRoutingInterface from './lib/routing-interface.js';
 import RouteData from './lib/route-data.js';
 
@@ -314,4 +312,4 @@ class Router {
 }
 
 export default Router;
-export {animatedRoutingMixin, BasicRoutingInterface, Context, RouteData, RouteTreeNode, routingMixin};
+export {BasicRoutingInterface, Context, RouteData, RouteTreeNode};

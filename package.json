@@ -7,15 +7,14 @@
   "files": [
     "lib/",
     "*.js",
-    "*.mixin.ts",
     "*.d.ts",
     "package.json",
     "README.md"
   ],
   "scripts": {
     "build": "tsc && yarn build:ts",
-    "build:ts": "tsc --project tsconfig.buildts.json",
-    "clean": "rimraf ./lib/**/*.d.ts ./*.d.ts ./lib/*.mixin.js --glob",
+    "build:ts": "tsc --project tsconfig.json",
+    "clean": "rimraf ./lib/**/*.d.ts ./*.d.ts --glob",
     "prepublish": "yarn clean && yarn build",
     "pretest": "playwright install",
     "test": "vitest"
@@ -37,7 +36,7 @@
     "@types/node": "^18.11.18"
   },
   "devDependencies": {
-    "@polymer/polymer": "^3.4.1",
+    "lit": "^3.1.1",
     "@types/node": "^22.10.0",
     "@vitest/browser": "^2.1.6",
     "playwright": "1.52.0",

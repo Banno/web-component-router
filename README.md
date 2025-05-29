@@ -49,7 +49,7 @@ import RouteData from '@jack-henry/web-component-router/lib/route-data.js';
  *     These should match to named path segments. Each camel case name
  *     is converted to a hyphenated name to be assigned to the element.
  * @param {boolean=} requiresAuthentication (optional - defaults true)
- * @param {function():Promise=} beforeEnter Optionally allows you to dynamically import the component for a given route.  The route-mixin.js will call your beforeEnter on routeEnter if the component does not exist in the dom.
+ * @param {function():Promise=} beforeEnter Optionally allows you to dynamically import the component for a given route.  A route's beforeEnter is called before the component is loaded, if the component does not exist in the dom.
  */
 const routeData = new RouteData(
     'Name of this route',
@@ -167,10 +167,10 @@ router.go('/login', {'redirect': destAfterLogin});
 hrefs is preferable. `router.go` should only be used when programatic route changes are strictly
 required.
 
-## Creating Routing Enabled Components
+## Routing Lifecycle
 
-Components used with the router are expected to define two methods
-which take the same arguments:
+Components used with the router can define two methods (defined in the BasicRoutingInterface)
+which take the same arguments from the router, and are called after the component is added/updates (routeEnder) and prior to the component's removed (routeExit).
 
 ```js
 class MyElement extends HtmlElement {
@@ -188,10 +188,7 @@ class MyElement extends HtmlElement {
    * @return {!Promise<boolean=>}
    */
   async routeEnter(currentNode, nextNodeIfExists, routeId, context) {
-    // make sure to set this to indicate the route was recognized.
-    context.handled = true;
-    // do something with the node
-    const currentElement = currentNode.getValue().element;
+    // Take an action in your component when it is loaded by the router
   }
 
   /**
@@ -205,37 +202,9 @@ class MyElement extends HtmlElement {
    * @param {!Context} context - page.js Context object
    */
   async routeExit(currentNode, nextNode, routeId, context) {
-    const currentElement = currentNode.getValue().element;
-
-    // remove the element from the dom
-    if (currentElement.parentNode) {
-      currentElement.parentNode.removeChild(/** @type {!Element} */ (currentElement));
-    }
-    currentNode.getValue().element = undefined;
+    // Take action before the component is removed
   }
 }
-```
-
-Most elements will either use (or inherit) the default implementations.
-Two mixins are provided to make this easy. When
-using the mixin, `routeEnter` and `routeExit` methods are only need defined
-when the default behavior needs modified. In most cases any overridden
-method should do minimal work and call `super.routeEnter` or `super.routeExit`.
-
-**Standard Routing Mixin**
-```js
-import routeMixin from '@jack-henry/web-component-router/routing-mixin.js';
-class MyElement extends routeMixin(HTMLElement) { }
-```
-
-**Animated Routing Mixin**
-
-The animated mixin applies a class to animated a node tree on entrance.
-Exit animations are currently not supported.
-
-```js
-import animatedRouteMixin from '@jack-henry/web-component-router/animated-routing-mixin.js';
-class MyElement extends animatedRouteMixin(HTMLElement, 'className') { }
 ```
 
 ## Root App Element
@@ -247,9 +216,9 @@ The root element typically has a slightly different configuration.
 
 ```js
 import myAppRouteTree from './route-tree.js';
-import router, {Context, routingMixin} from '@jack-henry/web-component-router';
+import router, {Context} from '@jack-henry/web-component-router';
 
-class AppElement extends routingMixin(Polymer.Element) {
+class AppElement extends HtmlElement {
   static get is() { return 'app-element'; }
 
   connectedCallback() {
@@ -257,7 +226,7 @@ class AppElement extends routingMixin(Polymer.Element) {
 
     router.routeTree = myAppRouteTree;
     // Define this instance as the root element
-    router.routeTree.getValue().element = this;
+    router.baseElement = this;
 
     // Start routing
     router.start();
@@ -298,9 +267,9 @@ issue.
 
 ```js
 import myAppRouteTree from './route-tree.js';
-import router, {routingMixin} from '@jack-henry/web-component-router';
+import router, from '@jack-henry/web-component-router';
 
-class AppElement extends routingMixin(Polymer.Element) {
+class AppElement extends HtmlElement {
   static get is() { return 'app-element'; }
 
   connectedCallback() {
