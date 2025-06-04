@@ -12,8 +12,10 @@
  *  B  C       E
  */
 import testRouteTree from './utils/testing-route-setup.js';
+import { describe, it, expect, vi } from 'vitest';
+import RouteTreeNode from '../lib/route-tree-node.js';
+import { loadRouteNode } from '../lib/route-change-handlers.js';
 import {Context} from '../router.js';
-import {vi} from 'vitest';
 
 describe('RouteTreeNode', () => {
   const ROOT = testRouteTree.tree.getNodeByKey(testRouteTree.Id.ROOT);
@@ -86,6 +88,27 @@ describe('RouteTreeNode', () => {
       });
       await C.activate(E.getKey(), new Context('/D/E'));
       expect(routePath.join('_')).toBe('E-exit_D-exit_ROOT-enter_A-enter');
+    });
+  });
+
+  describe('activate calls loadRouteNode when routeEnter undefined', () => {
+    beforeEach(() => {
+      vi.mock('../lib/route-change-handlers.js', () => ({
+        loadRouteNode: vi.fn().mockResolvedValue(true),
+        removeRouteNode: vi.fn().mockResolvedValue(true),
+      }));
+    });
+
+    it('should call routeEnter if it exists', async () => {
+      await A.activate(undefined, new Context('/A'));
+      expect(loadRouteNode).not.toHaveBeenCalled();
+    });
+
+    it('should call loadRouteNode if routeEnter does not exist', async () => {
+      A.getValue().element.routeEnter = undefined;
+
+      await A.activate(undefined, new Context('/A'));
+      expect(loadRouteNode).toHaveBeenCalled();
     });
   });
 });
