@@ -24,7 +24,6 @@ describe('RouteTreeNode', () => {
   const E = testRouteTree.tree.getNodeByKey(testRouteTree.Id.E);
   let routePath = [];
 
-  /** @polymer */
   class RoutedElement extends HTMLElement { // eslint-disable-line @banno/ux/custom-element-name
     static get is() {
       return 'routed-element';

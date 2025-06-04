@@ -169,8 +169,7 @@ required.
 
 ## Creating Routing Enabled Components
 
-Components used with the router are expected to define two methods
-which take the same arguments:
+Components used with the router do not need to handle routeEnter and routeExit, but may take action at these lifecycle events by extending the routingMixin and overriding these methods.
 
 ```js
 class MyElement extends HtmlElement {
@@ -216,7 +215,6 @@ class MyElement extends HtmlElement {
 }
 ```
 
-Most elements will either use (or inherit) the default implementations.
 Two mixins are provided to make this easy. When
 using the mixin, `routeEnter` and `routeExit` methods are only need defined
 when the default behavior needs modified. In most cases any overridden
@@ -249,7 +247,7 @@ The root element typically has a slightly different configuration.
 import myAppRouteTree from './route-tree.js';
 import router, {Context, routingMixin} from '@jack-henry/web-component-router';
 
-class AppElement extends routingMixin(Polymer.Element) {
+class AppElement extends routingMixin(HTMLElement) {
   static get is() { return 'app-element'; }
 
   connectedCallback() {

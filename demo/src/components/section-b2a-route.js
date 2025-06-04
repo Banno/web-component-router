@@ -1,7 +1,6 @@
 import { LitElement, html, css } from 'lit';
-import {routingMixin} from '@jack-henry/web-component-router';
 
-class SectionB2ARoute extends routingMixin(LitElement) {
+class SectionB2ARoute extends LitElement {
   static styles = css`
     :host {
       display: block;
