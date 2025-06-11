@@ -170,6 +170,7 @@ required.
 ## Creating Routing Enabled Components
 
 Components used with the router do not need to handle routeEnter and routeExit, but may take action at these lifecycle events by extending the routingMixin and overriding these methods.
+When using these methods, to continue routing you must use a super call to the base method (demonstrated below).
 
 ```js
 class MyElement extends HtmlElement {
@@ -191,6 +192,8 @@ class MyElement extends HtmlElement {
     context.handled = true;
     // do something with the node
     const currentElement = currentNode.getValue().element;
+    // Call super.routeEnter to maintain the route handling functionality (adding all subroutes in the tree)
+    await super.routeEnter(currentNode, nextNodeIfExists, routeId, context);
   }
 
   /**
@@ -206,11 +209,10 @@ class MyElement extends HtmlElement {
   async routeExit(currentNode, nextNode, routeId, context) {
     const currentElement = currentNode.getValue().element;
 
-    // remove the element from the dom
-    if (currentElement.parentNode) {
-      currentElement.parentNode.removeChild(/** @type {!Element} */ (currentElement));
-    }
-    currentNode.getValue().element = undefined;
+    // Take action before the component is removed from the dom
+
+    // Call super.routeExit to continue removing components not used by the new route.
+    await super.routeExit(currentNode, nextNode, routeId, context);
   }
 }
 ```
