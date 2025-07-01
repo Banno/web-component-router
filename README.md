@@ -173,7 +173,7 @@ Components used with the router do not need to handle routeEnter and routeExit, 
 When using these methods, to continue routing you must use a super call to the base method (demonstrated below).
 
 ```js
-class MyElement extends HtmlElement {
+class MyElement extends routingMixin(HTMLElement) {
   /**
    * Implementation for the callback on entering a route node.
    * routeEnter is called for EVERY route change. If the node
@@ -224,7 +224,7 @@ method should do minimal work and call `super.routeEnter` or `super.routeExit`.
 
 **Standard Routing Mixin**
 ```js
-import routeMixin from '@jack-henry/web-component-router/routing-mixin.js';
+import routingMixin from '@jack-henry/web-component-router/routing-mixin.js';
 class MyElement extends routeMixin(HTMLElement) { }
 ```
 
