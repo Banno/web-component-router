@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@polymer/polymer": "^3.4.1",
-    "@types/node": "^22.10.0",
+    "@types/node": "^24.0.8",
     "@vitest/browser": "^2.1.6",
     "playwright": "1.53.2",
     "rimraf": "^6.0.1",
