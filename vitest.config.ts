@@ -12,7 +12,9 @@ export default defineConfig((env) => ({
       provider: 'playwright',
       enabled: true,
       headless: !!process.env.CI,
-      name: 'chromium',
+      instances: [{
+        browser: 'chromium',
+      }],
     },
     globals: true,
     coverage: {
