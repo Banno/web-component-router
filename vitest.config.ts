@@ -1,27 +1,29 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from "vite";
 
 export default defineConfig((env) => ({
-  cacheDir: '.vitest/web-component-router',
+  cacheDir: ".vitest/web-component-router",
   build: {},
   optimzeDeps: {
-    include: ['path-to-regexp'],
+    include: ["path-to-regexp"],
   },
   test: {
     include: ["test/**/*-spec.js"],
     browser: {
-      provider: 'playwright',
+      provider: "playwright",
       enabled: true,
       headless: !!process.env.CI,
-      instances: [{
-        browser: 'chromium',
-      }],
+      instances: [
+        {
+          browser: "chromium",
+        },
+      ],
     },
     globals: true,
     coverage: {
       enabled: false,
       all: true,
-      provider: 'v8',
-      reporter: ['lcov', 'json', 'json-summary', 'html'],
+      provider: "v8",
+      reporter: ["lcov", "json", "json-summary", "html"],
       include: [],
       exclude: [],
       lines: 80,

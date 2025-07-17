@@ -16,6 +16,8 @@
     "build": "tsc && yarn build:ts",
     "build:ts": "tsc --project tsconfig.buildts.json",
     "clean": "rimraf ./lib/**/*.d.ts ./*.d.ts ./lib/*.mixin.js --glob",
+    "format:prettier": "prettier '**/*.(j|t)s' --write",
+    "lint:prettier": "prettier '**/*.(j|t)s' --check",
     "prepublish": "yarn clean && yarn build",
     "pretest": "playwright install",
     "test": "vitest"

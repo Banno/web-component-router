@@ -17,16 +17,16 @@
  *  effectively require authentication.
  */
 
-import {RouteData, RouteTreeNode, routingMixin}  from '../../router.js';
+import { RouteData, RouteTreeNode, routingMixin } from "../../router.js";
 
 /** @enum {string} */
 const RouteId = {
-  ROOT: 'tests-root',
-  A: 'tests-a',
-  B: 'tests-b',
-  C: 'tests-c',
-  D: 'tests-d',
-  E: 'tests-e'
+  ROOT: "tests-root",
+  A: "tests-a",
+  B: "tests-b",
+  C: "tests-c",
+  D: "tests-d",
+  E: "tests-e",
 };
 
 /**
@@ -43,19 +43,23 @@ for (const routeId in RouteId) {
   }
 }
 
-const E = new RouteTreeNode(new RouteData(RouteId.E, RouteId.E, '/D/E'));
-const D = new RouteTreeNode(new RouteData(RouteId.D, RouteId.D, '/D'));
+const E = new RouteTreeNode(new RouteData(RouteId.E, RouteId.E, "/D/E"));
+const D = new RouteTreeNode(new RouteData(RouteId.D, RouteId.D, "/D"));
 D.addChild(E);
-const C = new RouteTreeNode(new RouteData(RouteId.C, RouteId.C, '/C'));
-const B = new RouteTreeNode(new RouteData(RouteId.B, RouteId.B, '/B/:bData', ['bData'], false));
-const A = new RouteTreeNode(new RouteData(RouteId.A, RouteId.A, ''));
+const C = new RouteTreeNode(new RouteData(RouteId.C, RouteId.C, "/C"));
+const B = new RouteTreeNode(
+  new RouteData(RouteId.B, RouteId.B, "/B/:bData", ["bData"], false),
+);
+const A = new RouteTreeNode(new RouteData(RouteId.A, RouteId.A, ""));
 A.addChild(B);
 A.addChild(C);
-const ROOT = new RouteTreeNode(new RouteData(RouteId.ROOT, RouteId.ROOT, '/', [], false));
+const ROOT = new RouteTreeNode(
+  new RouteData(RouteId.ROOT, RouteId.ROOT, "/", [], false),
+);
 ROOT.addChild(A);
 ROOT.addChild(D);
 
 export default {
   tree: ROOT,
-  Id: RouteId
+  Id: RouteId,
 };

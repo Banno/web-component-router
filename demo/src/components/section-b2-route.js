@@ -1,6 +1,6 @@
-import { LitElement, html, css } from 'lit';
-import {routingMixin} from '@jack-henry/web-component-router';
-import './section-b2a-route.js';
+import { LitElement, html, css } from "lit";
+import { routingMixin } from "@jack-henry/web-component-router";
+import "./section-b2a-route.js";
 
 class SectionB2Route extends routingMixin(LitElement) {
   static styles = css`
@@ -31,7 +31,7 @@ class SectionB2Route extends routingMixin(LitElement) {
       },
       sectionB2Id: {
         type: String,
-        attribute: 'section-b2-id',
+        attribute: "section-b2-id",
       },
     };
   }
@@ -47,8 +47,14 @@ class SectionB2Route extends routingMixin(LitElement) {
       <h3>Section B2</h3>
 
       <p>This subRoute route also has a subRoute</p>
-      <p>Both routes share the <code>sectionB2Id</code> property/param from the route.</p>
-      <p>And the subroute also has the <code>sectionB2AId</code> property set by the url.</p>
+      <p>
+        Both routes share the <code>sectionB2Id</code> property/param from the
+        route.
+      </p>
+      <p>
+        And the subroute also has the <code>sectionB2AId</code> property set by
+        the url.
+      </p>
       <pre>
   static get properties() {
     return {
@@ -61,8 +67,9 @@ class SectionB2Route extends routingMixin(LitElement) {
       },
     };
   }
-      </pre>
-    <article>
+      </pre
+      >
+      <article>
         <p>Section b2 ID: <code>${this.sectionB2Id}</code></p>
         <div>
           <slot>
@@ -76,4 +83,4 @@ class SectionB2Route extends routingMixin(LitElement) {
 }
 
 // Define the custom element
-customElements.define('section-b2-route', SectionB2Route);
+customElements.define("section-b2-route", SectionB2Route);

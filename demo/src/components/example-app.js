@@ -1,5 +1,5 @@
-import { LitElement, html, css } from 'lit';
-import './base-route.js';
+import { LitElement, html, css } from "lit";
+import "./base-route.js";
 
 class ExampleApp extends LitElement {
   static styles = css`
@@ -26,4 +26,4 @@ class ExampleApp extends LitElement {
 }
 
 // Define the custom element
-customElements.define('example-app', ExampleApp);
+customElements.define("example-app", ExampleApp);

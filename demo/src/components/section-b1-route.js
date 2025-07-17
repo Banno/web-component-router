@@ -1,5 +1,5 @@
-import { LitElement, html, css } from 'lit';
-import {routingMixin} from '@jack-henry/web-component-router';
+import { LitElement, html, css } from "lit";
+import { routingMixin } from "@jack-henry/web-component-router";
 
 class SectionB1Route extends routingMixin(LitElement) {
   static styles = css`
@@ -17,7 +17,7 @@ class SectionB1Route extends routingMixin(LitElement) {
       },
       sectionB1Id: {
         type: String,
-        attribute: 'section-b1-id',
+        attribute: "section-b1-id",
       },
     };
   }
@@ -30,7 +30,7 @@ class SectionB1Route extends routingMixin(LitElement) {
 
   connectedCallback() {
     super.connectedCallback();
-    console.log('SectionA1Route connectedCallback');
+    console.log("SectionA1Route connectedCallback");
   }
 
   async routeEnter(currentNode, nextNodeIfExists, routeId, context) {
@@ -42,7 +42,10 @@ class SectionB1Route extends routingMixin(LitElement) {
     return html`
       <h3>Section B1</h3>
 
-      <p>This child route utilizes a parameter in the url path (<code>sectionB1Id</code>)</p>
+      <p>
+        This child route utilizes a parameter in the url path
+        (<code>sectionB1Id</code>)
+      </p>
       <p>The component defines the property and the camel-case attribute</p>
 
       <pre>
@@ -57,7 +60,8 @@ class SectionB1Route extends routingMixin(LitElement) {
       },
     };
   }
-      </pre>
+      </pre
+      >
 
       <p>Section b1 ID: <code>${this.sectionB1Id}</code></p>
     `;
@@ -65,4 +69,4 @@ class SectionB1Route extends routingMixin(LitElement) {
 }
 
 // Define the custom element
-customElements.define('section-b1-route', SectionB1Route);
+customElements.define("section-b1-route", SectionB1Route);

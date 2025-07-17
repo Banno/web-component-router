@@ -1,5 +1,5 @@
-import { LitElement, html, css } from 'lit';
-import {routingMixin} from '@jack-henry/web-component-router';
+import { LitElement, html, css } from "lit";
+import { routingMixin } from "@jack-henry/web-component-router";
 
 class DashboardRoute extends routingMixin(LitElement) {
   static styles = css`
@@ -11,11 +11,9 @@ class DashboardRoute extends routingMixin(LitElement) {
   `;
 
   render() {
-    return html`
-      <h1>Dashboard Route</h1>
-    `;
+    return html` <h1>Dashboard Route</h1> `;
   }
 }
 
 // Define the custom element
-customElements.define('dashboard-route', DashboardRoute);
+customElements.define("dashboard-route", DashboardRoute);

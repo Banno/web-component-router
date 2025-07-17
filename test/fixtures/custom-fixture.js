@@ -1,5 +1,5 @@
-import {PolymerElement, html} from '@polymer/polymer/polymer-element.js';
-import {BasicRoutingInterface, routingMixin} from '../../router.js';
+import { PolymerElement, html } from "@polymer/polymer/polymer-element.js";
+import { BasicRoutingInterface, routingMixin } from "../../router.js";
 /**
  * @constructor
  * @extends {PolymerElement}
@@ -9,7 +9,7 @@ const RoutedElement = routingMixin(PolymerElement);
 
 class CustomFixtureElement extends RoutedElement {
   static get is() {
-    return 'custom-fixture';
+    return "custom-fixture";
   }
 
   static get template() {

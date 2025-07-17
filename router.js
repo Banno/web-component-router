@@ -28,12 +28,12 @@
  */
 let RouteConfig;
 
-import {Context, Page} from './lib/page.js';
-import RouteTreeNode from './lib/route-tree-node.js';
-import routingMixin from './lib/routing-mixin.js';
-import animatedRoutingMixin from './lib/animated-routing-mixin.js';
-import BasicRoutingInterface from './lib/routing-interface.js';
-import RouteData from './lib/route-data.js';
+import { Context, Page } from "./lib/page.js";
+import RouteTreeNode from "./lib/route-tree-node.js";
+import routingMixin from "./lib/routing-mixin.js";
+import animatedRoutingMixin from "./lib/animated-routing-mixin.js";
+import BasicRoutingInterface from "./lib/routing-interface.js";
+import RouteData from "./lib/route-data.js";
 
 class Router {
   /** @param {RouteConfig=} routeConfig */
@@ -45,14 +45,20 @@ class Router {
     this.prevNodeId_;
 
     /** @type {!RouteTreeNode|undefined} */
-    this.routeTree_ = routeConfig ? this.buildRouteTree(routeConfig) : undefined;
+    this.routeTree_ = routeConfig
+      ? this.buildRouteTree(routeConfig)
+      : undefined;
 
     this.nextStateWasPopped = false;
 
     // Uses the capture phase so that this executes before the page.js handler
-    window.addEventListener('popstate', (evt) => {
-      this.nextStateWasPopped = true;
-    }, true);
+    window.addEventListener(
+      "popstate",
+      (evt) => {
+        this.nextStateWasPopped = true;
+      },
+      true,
+    );
 
     /** @type {!Set<!function():?>} */
     this.routeChangeStartCallbacks_ = new Set();
@@ -84,10 +90,21 @@ class Router {
 
   /** @param {!RouteConfig} routeConfig */
   buildRouteTree(routeConfig) {
-    const authenticated = [true, false].includes(routeConfig.authenticated) ?  routeConfig.authenticated : true;
-    const node = new RouteTreeNode(new RouteData(routeConfig.id, routeConfig.tagName, routeConfig.path, routeConfig.params || [], authenticated, routeConfig.beforeEnter));
+    const authenticated = [true, false].includes(routeConfig.authenticated)
+      ? routeConfig.authenticated
+      : true;
+    const node = new RouteTreeNode(
+      new RouteData(
+        routeConfig.id,
+        routeConfig.tagName,
+        routeConfig.path,
+        routeConfig.params || [],
+        authenticated,
+        routeConfig.beforeEnter,
+      ),
+    );
     if (routeConfig.subRoutes) {
-      routeConfig.subRoutes.forEach(route => {
+      routeConfig.subRoutes.forEach((route) => {
         node.addChild(this.buildRouteTree(route));
       });
     }
@@ -101,8 +118,16 @@ class Router {
   async start() {
     this.registerRoutes_();
 
-    document.addEventListener('tap', this.page.clickHandler.bind(this.page), false);
-    document.addEventListener('click', this.page.clickHandler.bind(this.page), false);
+    document.addEventListener(
+      "tap",
+      this.page.clickHandler.bind(this.page),
+      false,
+    );
+    document.addEventListener(
+      "click",
+      this.page.clickHandler.bind(this.page),
+      false,
+    );
 
     return this.page.start({
       click: false,
@@ -110,7 +135,7 @@ class Router {
       hashbang: false,
       decodeURLComponents: true,
       window: undefined,
-      dispatch: undefined
+      dispatch: undefined,
     });
   }
 
@@ -146,10 +171,10 @@ class Router {
    */
   url(path, params) {
     const paramPattern = [
-      ':[a-zA-Z]+', // param name
-      '(\\([^)]*\\))?', // optional parens with stuff inside
-      '\\??', // optional question mark
-      '(/|$)', // slash separator or end of string
+      ":[a-zA-Z]+", // param name
+      "(\\([^)]*\\))?", // optional parens with stuff inside
+      "\\??", // optional question mark
+      "(/|$)", // slash separator or end of string
     ];
 
     // Replace params with their values.
@@ -157,13 +182,13 @@ class Router {
       path = Object.entries(params).reduce((currentPath, [key, val]) => {
         const pattern = paramPattern.slice(0); // clone the original pattern
         pattern[0] = `:${key}`;
-        const pathMatcher = new RegExp(pattern.join(''));
+        const pathMatcher = new RegExp(pattern.join(""));
         if (pathMatcher.test(currentPath)) {
           // Found the param in the path. Replace it with the given value.
           currentPath = currentPath.replace(pathMatcher, `${val}$2`);
         } else {
           // Append the param as a query parameter.
-          const delimiter = currentPath.includes('?') ? '&' : '?';
+          const delimiter = currentPath.includes("?") ? "&" : "?";
           currentPath += `${delimiter}${encodeURIComponent(key)}=${encodeURIComponent(val)}`;
         }
         return currentPath;
@@ -171,8 +196,8 @@ class Router {
     }
 
     // Remove any optional params that don't have values.
-    paramPattern[2] = '\\?'; // not optional for this test
-    path = path.replace(new RegExp(paramPattern.join(''), 'g'), '');
+    paramPattern[2] = "\\?"; // not optional for this test
+    path = path.replace(new RegExp(paramPattern.join(""), "g"), "");
 
     return path;
   }
@@ -182,7 +207,7 @@ class Router {
    * @param {function(!Context, function(boolean=):?):?} callback
    */
   addGlobalExitHandler(callback) {
-    this.page.exit('*', callback);
+    this.page.exit("*", callback);
   }
 
   /**
@@ -243,7 +268,10 @@ class Router {
         return;
       }
 
-      this.page.register(routeData.path, this.routeChangeCallback_.bind(this, node));
+      this.page.register(
+        routeData.path,
+        this.routeChangeCallback_.bind(this, node),
+      );
     });
   }
 
@@ -281,7 +309,7 @@ class Router {
    * @return {!string}
    */
   getRouteUrlWithoutParams(context) {
-    const segments = context.path.split('/');
+    const segments = context.path.split("/");
     const params = {};
 
     // flip the keys and values of the params
@@ -297,9 +325,16 @@ class Router {
       }
     }
 
-    return segments.join('/');
+    return segments.join("/");
   }
 }
 
 export default Router;
-export {animatedRoutingMixin, BasicRoutingInterface, Context, RouteData, RouteTreeNode, routingMixin};
+export {
+  animatedRoutingMixin,
+  BasicRoutingInterface,
+  Context,
+  RouteData,
+  RouteTreeNode,
+  routingMixin,
+};
