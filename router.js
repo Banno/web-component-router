@@ -69,7 +69,10 @@ class Router {
   }
 
   /** @return {Router} */
-  get instance() {
+  static get instance() {
+    if (!Router.instance_) {
+      throw new Error('Router has not been initialized.');
+    }
     return Router.instance_;
   }
 
