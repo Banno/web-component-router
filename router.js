@@ -68,6 +68,11 @@ class Router {
     this.page = new Page();
   }
 
+  /** @return {Router} */
+  get instance() {
+    return Router.instance_;
+  }
+
   /** @return {!RouteTreeNode|undefined} */
   get routeTree() {
     return this.routeTree_;
