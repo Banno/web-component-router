@@ -43,10 +43,6 @@ class Router {
     if (Router.instance_ !== null) {
       return Router.instance_;
     }
-    // If this is the first instantiation, a config is required.
-    if (!routeConfig) {
-      throw new Error('Router must be initialized with a routeConfig.');
-    }
     Router.instance_ = this;
     /** @type {string|undefined} */
     this.currentNodeId_;
