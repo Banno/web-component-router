@@ -36,8 +36,14 @@ import BasicRoutingInterface from './lib/routing-interface.js';
 import RouteData from './lib/route-data.js';
 
 class Router {
+  static instance_ /** @type {Router}*/ = null;
+
   /** @param {RouteConfig=} routeConfig */
   constructor(routeConfig) {
+    if (Router.instance_ !== null) {
+      return Router.instance_;
+    }
+    Router.instance_ = this;
     /** @type {string|undefined} */
     this.currentNodeId_;
 
@@ -60,6 +66,14 @@ class Router {
     this.routeChangeCompleteCallbacks_ = new Set();
 
     this.page = new Page();
+  }
+
+  /** @return {Router} */
+  static get instance() {
+    if (!Router.instance_) {
+      throw new Error('Router has not been initialized.');
+    }
+    return Router.instance_;
   }
 
   /** @return {!RouteTreeNode|undefined} */

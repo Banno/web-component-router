@@ -143,6 +143,16 @@ const routeConfig = {
 
 const router = New Router(routeConfig);
 ```
+## Router Singleton
+The `Router` class is implemented as a singleton. This means there will only ever be one instance of the router throughout your application. You can access this instance via `Router.instance`. If you attempt to instantiate `Router` more than once, it will return the existing instance.
+
+To initialize the router with a `routeConfig` object, you should do so during the first instantiation.
+Example:
+`const router = new Router(routeConfig);`
+Subsequent accesses should use `Router.instance`.
+Example:
+`const router = Router.instance;`
+
 
 When using this method the default is that a route requires authentication, as shown above in the 'about' route, set `authenticated` to false to create a route which does not require authentication.
 
@@ -343,6 +353,12 @@ class AppElement extends routingMixin(Polymer.Element) {
 ## Router Reference
 
 ```js
+/**
+ * Get the router instance
+ * @type {Router}
+ */
+router.instance;
+
 /**
  * Get or define the routing tree
  * @type {!RouteTreeNode}

@@ -21,6 +21,13 @@ function JSCompiler_renameProperty(propName, instance) {
 }
 
 describe('Router', () => {
+  beforeEach(() => {
+    Router.instance_ = null;
+  });
+
+  afterAll(() => {
+    Router.instance_ = null;
+  });
   let router = new Router();
 
   const A = testRouteTree.tree.getNodeByKey(testRouteTree.Id.A);
