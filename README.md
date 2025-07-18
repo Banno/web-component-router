@@ -179,11 +179,11 @@ required.
 
 ## Creating Routing Enabled Components
 
-Components used with the router are expected to define two methods
-which take the same arguments:
+Components used with the router do not need to handle routeEnter and routeExit, but may take action at these lifecycle events by extending the routingMixin and overriding these methods.
+When using these methods, to continue routing you must use a super call to the base method (demonstrated below).
 
 ```js
-class MyElement extends HtmlElement {
+class MyElement extends routingMixin(HTMLElement) {
   /**
    * Implementation for the callback on entering a route node.
    * routeEnter is called for EVERY route change. If the node
@@ -202,6 +202,8 @@ class MyElement extends HtmlElement {
     context.handled = true;
     // do something with the node
     const currentElement = currentNode.getValue().element;
+    // Call super.routeEnter to maintain the route handling functionality (adding all subroutes in the tree)
+    await super.routeEnter(currentNode, nextNodeIfExists, routeId, context);
   }
 
   /**
@@ -217,16 +219,14 @@ class MyElement extends HtmlElement {
   async routeExit(currentNode, nextNode, routeId, context) {
     const currentElement = currentNode.getValue().element;
 
-    // remove the element from the dom
-    if (currentElement.parentNode) {
-      currentElement.parentNode.removeChild(/** @type {!Element} */ (currentElement));
-    }
-    currentNode.getValue().element = undefined;
+    // Take action before the component is removed from the dom
+
+    // Call super.routeExit to continue removing components not used by the new route.
+    await super.routeExit(currentNode, nextNode, routeId, context);
   }
 }
 ```
 
-Most elements will either use (or inherit) the default implementations.
 Two mixins are provided to make this easy. When
 using the mixin, `routeEnter` and `routeExit` methods are only need defined
 when the default behavior needs modified. In most cases any overridden
@@ -234,7 +234,7 @@ method should do minimal work and call `super.routeEnter` or `super.routeExit`.
 
 **Standard Routing Mixin**
 ```js
-import routeMixin from '@jack-henry/web-component-router/routing-mixin.js';
+import routingMixin from '@jack-henry/web-component-router/routing-mixin.js';
 class MyElement extends routeMixin(HTMLElement) { }
 ```
 
@@ -259,7 +259,7 @@ The root element typically has a slightly different configuration.
 import myAppRouteTree from './route-tree.js';
 import router, {Context, routingMixin} from '@jack-henry/web-component-router';
 
-class AppElement extends routingMixin(Polymer.Element) {
+class AppElement extends routingMixin(HTMLElement) {
   static get is() { return 'app-element'; }
 
   connectedCallback() {

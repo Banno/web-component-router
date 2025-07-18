@@ -119,7 +119,7 @@ describe('Router', () => {
         path: '/users/:userId([0-9]{1,6})',
         requiresAuthentication: true,
         params: ['userId'],
-        beforeEnter: () => Promise.resolve(),
+        beforeEnter: (currentNode, nextNodeIfExists, routeId, context) => Promise.resolve(),
     }, {
         id: 'app-user-account',
         tagName: 'APP-ACCOUNT-PAGE',
