@@ -21,6 +21,13 @@ function JSCompiler_renameProperty(propName, instance) {
 }
 
 describe('Router', () => {
+  beforeEach(() => {
+    Router.instance_ = null;
+  });
+
+  afterAll(() => {
+    Router.instance_ = null;
+  });
   let router = new Router();
 
   const A = testRouteTree.tree.getNodeByKey(testRouteTree.Id.A);
@@ -112,7 +119,7 @@ describe('Router', () => {
         path: '/users/:userId([0-9]{1,6})',
         requiresAuthentication: true,
         params: ['userId'],
-        beforeEnter: () => Promise.resolve(),
+        beforeEnter: (currentNode, nextNodeIfExists, routeId, context) => Promise.resolve(),
     }, {
         id: 'app-user-account',
         tagName: 'APP-ACCOUNT-PAGE',

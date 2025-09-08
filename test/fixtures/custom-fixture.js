@@ -1,11 +1,11 @@
-import {PolymerElement, html} from '@polymer/polymer/polymer-element.js';
+import {LitElement, html} from 'lit';
 import {BasicRoutingInterface, routingMixin} from '../../router.js';
 /**
  * @constructor
- * @extends {PolymerElement}
+ * @extends {LitElement}
  * @implements {BasicRoutingInterface}
  */
-const RoutedElement = routingMixin(PolymerElement);
+const RoutedElement = routingMixin(LitElement);
 
 class CustomFixtureElement extends RoutedElement {
   static get is() {
