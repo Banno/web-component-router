@@ -158,6 +158,14 @@ describe('Router', () => {
       expect(subRoutes[0].getValue().requiresAuthentication).toBe(true);
       expect(subRoutes[2].getValue().requiresAuthentication).toBe(false);
     });
+
+    it('should set metaData to to the correct values', () => {
+      const routeTree = router.buildRouteTree(testRouteConfig);
+      const subRoutes = routeTree.getChildren();
+      expect(subRoutes[0].getValue().metaData).toEqual({title:'User Page'});
+      expect(subRoutes[1].getValue().metaData).toEqual({});
+      expect(subRoutes[2].getValue().metaData).toEqual({});
+    });
   });
 
   describe('url()', () => {

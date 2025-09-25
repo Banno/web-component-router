@@ -8,6 +8,7 @@ const testRouteConfig = {
         path: '/users/:userId([0-9]{1,6})',
         params: ['userId'],
         beforeEnter: (currentNode, nextNodeIfExists, routeId, context) => Promise.resolve(),
+        metaData: {title:'User Page'}
     }, {
         id: 'app-user-account',
         tagName: 'APP-ACCOUNT-PAGE',
