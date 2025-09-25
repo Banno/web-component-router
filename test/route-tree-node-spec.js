@@ -34,6 +34,9 @@ describe('RouteTreeNode', () => {
       super();
       this.keyName = keyName;
     }
+    async beforeEnter(node, nextNode, routeId, context) {
+      routePath.push(`${this.keyName}-beforeEnter`);
+    }
     async routeEnter(node, nextNode, routeId, context) {
       routePath.push(`${this.keyName}-enter`);
     }
@@ -68,17 +71,17 @@ describe('RouteTreeNode', () => {
 
     it('activating a route without a previous route id only invokes entry methods', async () => {
       await C.activate(undefined, new Context('/C'));
-      expect(routePath.join('_')).toBe('ROOT-enter_A-enter_C-enter');
+      expect(routePath.join('_')).toBe('ROOT-beforeEnter_ROOT-enter_A-beforeEnter_A-enter_C-beforeEnter_C-enter');
     });
 
     it('activating a route should call the correct methods', async () => {
       await E.activate(B.getKey(), new Context('/D/E'));
-      expect(routePath.join('_')).toBe('B-exit_A-exit_ROOT-enter_D-enter_E-enter');
+      expect(routePath.join('_')).toBe('B-exit_A-exit_ROOT-beforeEnter_ROOT-enter_D-beforeEnter_D-enter_E-beforeEnter_E-enter');
     });
 
     it('activating a route should call the correct methods 2', async () => {
       await C.activate(B.getKey(), new Context('/C'));
-      expect(routePath.join('_')).toBe('B-exit_ROOT-enter_A-enter_C-enter');
+      expect(routePath.join('_')).toBe('B-exit_ROOT-beforeEnter_ROOT-enter_A-beforeEnter_A-enter_C-beforeEnter_C-enter');
     });
 
     it('returning "false" from the routeEnter method should prevent future methods from being invoked', async () => {
@@ -87,7 +90,7 @@ describe('RouteTreeNode', () => {
         return Promise.resolve(false);
       });
       await C.activate(E.getKey(), new Context('/D/E'));
-      expect(routePath.join('_')).toBe('E-exit_D-exit_ROOT-enter_A-enter');
+      expect(routePath.join('_')).toBe('E-exit_D-exit_ROOT-beforeEnter_ROOT-enter_A-beforeEnter_A-enter');
     });
   });
 

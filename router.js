@@ -24,11 +24,13 @@
  *  authenticated: (boolean|undefined),
  *  subRoutes: (Array<RouteConfig>|undefined),
  *  beforeEnter: (function():Promise)
+ *  routeEnter: (function():Promise)
+ *  routeExit: (function():Promise)
  * }} RouteConfig
  */
 let RouteConfig;
 
-import {Context, Page} from './lib/page.js';
+import { Context, Page } from './lib/page.js';
 import RouteTreeNode from './lib/route-tree-node.js';
 import routingMixin from './lib/routing-mixin.js';
 import animatedRoutingMixin from './lib/animated-routing-mixin.js';
@@ -56,9 +58,13 @@ class Router {
     this.nextStateWasPopped = false;
 
     // Uses the capture phase so that this executes before the page.js handler
-    window.addEventListener('popstate', (evt) => {
-      this.nextStateWasPopped = true;
-    }, true);
+    window.addEventListener(
+      'popstate',
+      (evt) => {
+        this.nextStateWasPopped = true;
+      },
+      true,
+    );
 
     /** @type {!Set<!function():?>} */
     this.routeChangeStartCallbacks_ = new Set();
@@ -98,10 +104,21 @@ class Router {
 
   /** @param {!RouteConfig} routeConfig */
   buildRouteTree(routeConfig) {
-    const authenticated = [true, false].includes(routeConfig.authenticated) ?  routeConfig.authenticated : true;
-    const node = new RouteTreeNode(new RouteData(routeConfig.id, routeConfig.tagName, routeConfig.path, routeConfig.params || [], authenticated, routeConfig.beforeEnter));
+    const authenticated = [true, false].includes(routeConfig.authenticated) ? routeConfig.authenticated : true;
+    const node = new RouteTreeNode(
+      new RouteData(
+        routeConfig.id,
+        routeConfig.tagName,
+        routeConfig.path,
+        routeConfig.params || [],
+        authenticated,
+        routeConfig.beforeEnter,
+        routeConfig.routeEnter,
+        routeConfig.routeExit,
+      ),
+    );
     if (routeConfig.subRoutes) {
-      routeConfig.subRoutes.forEach(route => {
+      routeConfig.subRoutes.forEach((route) => {
         node.addChild(this.buildRouteTree(route));
       });
     }
@@ -124,7 +141,7 @@ class Router {
       hashbang: false,
       decodeURLComponents: true,
       window: undefined,
-      dispatch: undefined
+      dispatch: undefined,
     });
   }
 
@@ -316,4 +333,4 @@ class Router {
 }
 
 export default Router;
-export {animatedRoutingMixin, BasicRoutingInterface, Context, RouteData, RouteTreeNode, routingMixin};
+export { animatedRoutingMixin, BasicRoutingInterface, Context, RouteData, RouteTreeNode, routingMixin };
