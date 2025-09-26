@@ -125,13 +125,15 @@ const routeConfig = {
         tagName: 'APP-USER-PAGE',
         path: '/users/:userId([0-9]{1,6})',
         params: ['userId'],
-        beforeEnter: () => import('../app-user-page.js')
+        beforeEnter: () => import('../app-user-page.js'),
+        metaData: { title: 'User Page' }
     }, {
         id: 'app-user-account',
         tagName: 'APP-ACCOUNT-PAGE',
         path: '/users/:userId([0-9]{1,6})/accounts/:accountId([0-9]{1,6})',
         params: ['userId', 'accountId'],
-        beforeEnter: () => import('../app-account-page.js')
+        beforeEnter: () => import('../app-account-page.js'),
+        metaData: {title: 'Account Page', layoutMode: 'single-column' }
     }, {
       id: 'app-about',
       tagName: 'APP-ABOUT',
@@ -155,6 +157,16 @@ Example:
 
 
 When using this method the default is that a route requires authentication, as shown above in the 'about' route, set `authenticated` to false to create a route which does not require authentication.
+
+## RouteConfig metaData
+The `metaData` property of a route allows you to attach arbitrary data to a route. This can be useful for storing information such as page titles, layout modes, or any other custom data that you may need to access when the route is activated. You can access this metaData in the `routeEnter` method of your component by retrieving the destination node from the router's route tree.
+
+```javascript
+const destinationNode = this.router.routeTree.getNodeByKey(routeId);
+const metaData = destinationNode.getValue().metaData || {};
+// do something with metaData
+// ...
+```
 
 ## Redirecting
 

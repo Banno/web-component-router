@@ -78,6 +78,13 @@ class BaseRoute extends routingMixin(LitElement) {
     console.log('Context:', context);
 
     this.activeRouteId = routeId;
+    // reference the metaData to set the document title
+    const destinationNode = this.router.routeTree.getNodeByKey(routeId);
+    const metaData = destinationNode.getValue().metaData || {};
+    if (metaData.title) {
+      document.title = metaData.title;
+    }
+    // Log the active route ID
     console.log('Active route ID:', this.activeRouteId);
 
   }
