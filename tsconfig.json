@@ -13,6 +13,6 @@
     "noUnusedParameters": false,
     "typeRoots": ["types", "node_modules/@types"]
   },
-  "include": ["types/*.ts", "lib/**/*.js", "*.js"],
+  "include": ["types/*.ts", "lib/**/*.js", "router.js"],
   "exclude": ["node_modules", "test"]
 }

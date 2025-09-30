@@ -1,0 +1,4 @@
+# Temp: disabled running tests and build on pre-commit. Can be quite slow as playwright might need to install browsers
+# yarn test && yarn build
+# # uncomment to test the pre-commit hook
+# exit 1
