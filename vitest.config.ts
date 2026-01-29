@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import {playwright} from '@vitest/browser-playwright';
 
 export default defineConfig((env) => ({
   cacheDir: '.vitest/web-component-router',
@@ -9,7 +10,7 @@ export default defineConfig((env) => ({
   test: {
     include: ["test/**/*-spec.js"],
     browser: {
-      provider: 'playwright',
+      provider: playwright(),
       enabled: true,
       headless: !!process.env.CI,
       instances: [{
