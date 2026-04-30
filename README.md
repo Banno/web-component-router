@@ -227,6 +227,7 @@ class MyElement extends routingMixin(HTMLElement) {
    * @param {!RouteTreeNode|undefined} nextNode - parent node
    * @param {string} routeId - unique name of the route
    * @param {!Context} context - page.js Context object
+   * @return {!Promise<boolean=>}
    */
   async routeExit(currentNode, nextNode, routeId, context) {
     const currentElement = currentNode.getValue().element;

@@ -9,7 +9,7 @@
  *     /      \
  *    A       D
  *   / \       \
- *  B  C       E
+ *  B   C       E
  */
 import testRouteTree from './utils/testing-route-setup.js';
 import { describe, it, expect, vi } from 'vitest';
@@ -81,34 +81,72 @@ describe('RouteTreeNode', () => {
       expect(routePath.join('_')).toBe('B-exit_ROOT-enter_A-enter_C-enter');
     });
 
-    it('returning "false" from the routeEnter method should prevent future methods from being invoked', async () => {
-      vi.spyOn(A.getValue().element, 'routeEnter').mockImplementation(function() {
-        routePath.push('A-enter');
-        return Promise.resolve(false);
+    describe('when routeEnter returns "false"', () => {
+      beforeEach(() => {
+        vi.spyOn(A.getValue().element, 'routeEnter').mockImplementation(function() {
+          routePath.push('A-enter');
+          return Promise.resolve(false);
+        });
       });
-      await C.activate(E.getKey(), new Context('/D/E'));
-      expect(routePath.join('_')).toBe('E-exit_D-exit_ROOT-enter_A-enter');
+      it('prevents future methods from being invoked', async () => {
+        await C.activate(E.getKey(), new Context('/A/C'));
+        expect(routePath.join('_')).toBe('E-exit_D-exit_ROOT-enter_A-enter');
+      });
+      it('prevents pushState on context', async () => {
+        const context = new Context('/A/C');
+        expect(context.handled).toBeFalsy();
+        context.shouldPushState = true; // should initially be true to test that it gets set to false
+        const pushStateSpy = vi.spyOn(context, 'pushState');
+        await C.activate(E.getKey(), context);
+        expect(routePath.join('_')).toBe('E-exit_D-exit_ROOT-enter_A-enter');
+        expect(context.handled).toBe(true);
+        expect(context.shouldPushState).toBe(false);
+        expect(pushStateSpy).not.toHaveBeenCalled();
+      });
     });
-  });
 
-  describe('activate calls loadRouteNode when routeEnter undefined', () => {
-    beforeEach(() => {
-      vi.mock('../lib/route-change-handlers.js', () => ({
-        loadRouteNode: vi.fn().mockResolvedValue(true),
-        removeRouteNode: vi.fn().mockResolvedValue(true),
-      }));
+    describe('when routeExit returns false', () => {
+      beforeEach(() => {
+        vi.spyOn(A.getValue().element, 'routeExit').mockImplementation(function() {
+          routePath.push('A-exit');
+          return Promise.resolve(false);
+        });
+      });
+      it('prevents future methods from being invoked', async () => {
+        await E.activate(C.getKey(), new Context('/D/E'));
+        expect(routePath.join('_')).toBe('C-exit_A-exit');
+      });
+      it('sets context to handled and prevents pushState', async () => {
+        const context = new Context('/D/E');
+        expect(context.handled).toBeFalsy();
+        context.shouldPushState = true; // should initially be true to test that it gets set to false
+        const pushStateSpy = vi.spyOn(context, 'pushState');
+        await E.activate(C.getKey(), context);
+        expect(routePath.join('_')).toBe('C-exit_A-exit');
+        expect(context.handled).toBe(true);
+        expect(context.shouldPushState).toBe(false);
+        expect(pushStateSpy).not.toHaveBeenCalled();
+      });
     });
 
-    it('should call routeEnter if it exists', async () => {
-      await A.activate(undefined, new Context('/A'));
-      expect(loadRouteNode).not.toHaveBeenCalled();
-    });
+    describe('calls loadRouteNode when routeEnter undefined', () => {
+      beforeEach(() => {
+        vi.mock('../lib/route-change-handlers.js', () => ({
+          loadRouteNode: vi.fn().mockResolvedValue(true),
+          removeRouteNode: vi.fn().mockResolvedValue(true),
+        }));
+      });
 
-    it('should call loadRouteNode if routeEnter does not exist', async () => {
-      A.getValue().element.routeEnter = undefined;
+      it('should call routeEnter if it exists', async () => {
+        await A.activate(undefined, new Context('/A'));
+        expect(loadRouteNode).not.toHaveBeenCalled();
+      });
 
-      await A.activate(undefined, new Context('/A'));
-      expect(loadRouteNode).toHaveBeenCalled();
+      it('should call loadRouteNode if routeEnter does not exist', async () => {
+        A.getValue().element.routeEnter = undefined;
+        await A.activate(undefined, new Context('/A'));
+        expect(loadRouteNode).toHaveBeenCalled();
+      });
     });
   });
 });
