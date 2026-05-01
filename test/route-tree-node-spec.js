@@ -16,6 +16,7 @@ import { describe, it, expect, vi } from 'vitest';
 import RouteTreeNode from '../lib/route-tree-node.js';
 import { loadRouteNode } from '../lib/route-change-handlers.js';
 import {Context} from '../router.js';
+import { exit } from 'node:process';
 
 describe('RouteTreeNode', () => {
   const ROOT = testRouteTree.tree.getNodeByKey(testRouteTree.Id.ROOT);
@@ -106,26 +107,38 @@ describe('RouteTreeNode', () => {
     });
 
     describe('when routeExit returns false', () => {
+      let pushStateSpy;
+      let context;
       beforeEach(() => {
         vi.spyOn(A.getValue().element, 'routeExit').mockImplementation(function() {
           routePath.push('A-exit');
           return Promise.resolve(false);
         });
+
+        context = new Context('/D/E');
+        pushStateSpy = vi.spyOn(context, 'pushState');
+        expect(context.handled).toBeFalsy(); // sanity check
+        context.shouldPushState = true; // should initially be true to test that it gets set to false
       });
-      it('prevents future methods from being invoked', async () => {
+      it('prevents future routes from being invoked', async () => {
         await E.activate(C.getKey(), new Context('/D/E'));
         expect(routePath.join('_')).toBe('C-exit_A-exit');
       });
-      it('sets context to handled and prevents pushState', async () => {
-        const context = new Context('/D/E');
-        expect(context.handled).toBeFalsy();
-        context.shouldPushState = true; // should initially be true to test that it gets set to false
-        const pushStateSpy = vi.spyOn(context, 'pushState');
+      it('sets context to handled', async () => {
         await E.activate(C.getKey(), context);
-        expect(routePath.join('_')).toBe('C-exit_A-exit');
         expect(context.handled).toBe(true);
+      });
+      it('prevents pushState', async () => {
+        await E.activate(C.getKey(), context);
         expect(context.shouldPushState).toBe(false);
         expect(pushStateSpy).not.toHaveBeenCalled();
+      });
+      it('does not clear exit node element', async () => {
+        const exitNode = A.getValue();
+        expect(exitNode.element).toBeInstanceOf(RoutedElement);
+
+        await E.activate(C.getKey(), context);
+        expect(A.getValue().element).toBeDefined();
       });
     });
 
