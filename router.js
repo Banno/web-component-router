@@ -272,15 +272,17 @@ class Router {
     for (const cb of this.routeChangeStartCallbacks_) {
       cb();
     }
-    this.prevNodeId_ = this.currentNodeId_;
-    this.currentNodeId_ = routeTreeNode.getKey();
     /** @type {!Error|undefined} */
     let routeError;
     try {
-      await routeTreeNode.activate(this.prevNodeId, context);
+      if (!(await routeTreeNode.activate(this.currentNodeId_, context))) {
+        return;
+      }
     } catch (err) {
       routeError = err;
     }
+    this.prevNodeId_ = this.currentNodeId_;
+    this.currentNodeId_ = routeTreeNode.getKey();
     next();
     this.nextStateWasPopped = false;
     for (const cb of this.routeChangeCompleteCallbacks_) {
