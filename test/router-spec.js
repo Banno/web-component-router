@@ -254,22 +254,16 @@ describe('Router', () => {
       router.page.callbacks.pop();
     });
 
-    it('should be an empty object if there are no query parameters', (done) => {
-      router.page.register('/test', (context, next) => {
-        expect(context.query).toBeInstanceOf(URLSearchParams);
-        expect(Array.from(context.query.keys())).toEqual([]);
-        done();
-      });
-      router.go('/test');
+    it('should be an empty object if there are no query parameters', async () => {
+      const context = await router.go('/test');
+      expect(context.query).toBeInstanceOf(URLSearchParams);
+      expect(Array.from(context.query.keys())).toEqual([]);
     });
 
-    it('should have properties that match the query parameters', (done) => {
-      router.page.register('/test', (context, next) => {
-        expect(context.query.get('foo')).toBe('bar');
-        expect(context.query.get('noValue')).toBe('');
-        done();
-      });
-      router.go('/test?foo=bar&noValue');
+    it('should have properties that match the query parameters', async () => {
+      const context = await router.go('/test?foo=bar&noValue');
+      expect(context.query.get('foo')).toBe('bar');
+      expect(context.query.get('noValue')).toBe('');
     });
   });
 
