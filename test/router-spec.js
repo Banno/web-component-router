@@ -14,7 +14,7 @@ import testRouteTree from './utils/testing-route-setup.js';
 import testRouteConfig from './utils/test-route-config.js';
 import Router, {Context, RouteTreeNode} from '../router.js';
 import RoutedElement from './fixtures/custom-fixture.js';
-import {vi} from 'vitest';
+import {expect, vi} from 'vitest';
 
 function JSCompiler_renameProperty(propName, instance) {
   return propName;
@@ -76,29 +76,38 @@ describe('Router', () => {
     expect(router.page.start).toHaveBeenCalled();
   });
 
-  it('should not have a previous route id initially', () => {
+  it('should not have a current route id initially', () => {
     expect(router.currentNodeId_).toBe(undefined);
   });
 
+  it('should not have a previous route id initially', () => {
+    expect(router.prevNodeId_).toBe(undefined);
+  });
+
   it('callbacks should call router.routeChangeCallback_ with the correct this binding and arguments', async () => {
+    let routeChangeCallbackCalled = false;
     newRouteChangeCallback = (function(node, ...args) {
       expect(args.length).toBe(2);
       expect(this instanceof router.constructor).toBe(true);
       expect(node instanceof RouteTreeNode).toBe(true);
-
+      routeChangeCallbackCalled = true;
     }).bind(router);
 
-    router.go('/B/somedata');
+    await router.go('/B/somedata');
+    expect(routeChangeCallbackCalled).toBe(true);
   });
 
-  it('should store the previous route id', () => {
-    expect(router.currentNodeId_).toBe(testRouteTree.Id.B);
+  it('should store the previous route id', async () => {
+    await router.go('/B/somedata');
+    await router.go('/C');
+    expect(router.currentNodeId_).toBe(testRouteTree.Id.C);
+    expect(router.prevNodeId_).toBe(testRouteTree.Id.B);
   });
 
   describe('Router constructor', () => {
-    afterAll(() => {
-      // reset routeTree
-      router = new Router();
+    beforeEach(() => {
+      // reset singleton instance before each test to prevent tests from affecting each other
+      Router.instance_ = null;
     });
 
     it('should leave the routeTree undefined if instantiated without a route configuration', () => {
@@ -109,6 +118,17 @@ describe('Router', () => {
     it('should create the routeTree when instantiated with the route configuration', () => {
       router = new Router(testRouteConfig);
       expect(router.routeTree).not.toBe(undefined);
+    });
+
+    it('sets singleton instance', () => {
+      router = new Router();
+      expect(Router.instance_).toBe(router);
+    });
+
+    it('returns the singleton instance if the constructor is called multiple times', () => {
+      const router1 = new Router();
+      const router2 = new Router();
+      expect(router1).toBe(router2);
     });
   });
 
