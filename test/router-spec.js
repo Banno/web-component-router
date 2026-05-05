@@ -14,74 +14,71 @@ import testRouteTree from './utils/testing-route-setup.js';
 import testRouteConfig from './utils/test-route-config.js';
 import Router, {Context, RouteTreeNode} from '../router.js';
 import RoutedElement from './fixtures/custom-fixture.js';
-import {expect, vi} from 'vitest';
+import {afterEach, beforeEach, describe, expect, vi} from 'vitest';
+import { ROOT, A, B, C, D, E } from './utils/testing-route-setup.js';
 
 function JSCompiler_renameProperty(propName, instance) {
   return propName;
 }
 
 describe('Router', () => {
-  beforeEach(() => {
-    Router.instance_ = null;
-  });
+  let router;
 
-  afterAll(() => {
-    Router.instance_ = null;
-  });
-  let router = new Router();
-
-  const A = testRouteTree.tree.getNodeByKey(testRouteTree.Id.A);
-  const B = testRouteTree.tree.getNodeByKey(testRouteTree.Id.B);
-
-  const originalRouteChangeCallback = router.routeChangeCallback_;
   /** @type {!Function} */
   let newRouteChangeCallback;
 
-  const startPropertyName = JSCompiler_renameProperty('start', router.page);
+  const startPropertyName = JSCompiler_renameProperty('start', Router.prototype.page);
 
-  beforeAll(() => {
-    // reset router
+  const initRouter = async () => {
+    history.pushState({}, '', '/'); // reset URL to prevent page.js from invoking route callbacks on page load
+    Router.instance_ = null; // reset singleton instance to force creating new instance
+    newRouteChangeCallback = undefined; // reset newRouteChangeCallback to prevent tests from affecting each other
+    router = new Router();
     router.routeTree = testRouteTree.tree;
-
     router.routeChangeCallback_ = (function(...args) {
-      originalRouteChangeCallback.apply(this, args);
+      Router.prototype.routeChangeCallback_.apply(this, args);
       if (newRouteChangeCallback) {
         newRouteChangeCallback.apply(this, args);
       }
     }).bind(router);
 
+    // should start with no current or previous route
+    expect(router.prevNodeId_).toBe(undefined); // sanity check
+    expect(router.currentNodeId_).toBe(undefined); // sanity check
+
+    await router.start();
     router.page.register('*', (context, next) => {
       context.handled = true; // prevents actually leaving the page
       next();
     });
+
+    expect(router.prevNodeId_).toBe(undefined); // sanity check
+    expect(router.currentNodeId_).toBe(testRouteTree.Id.ROOT); // sanity check
+  };
+
+  beforeEach(async () => {
+    await initRouter();
   });
 
-  afterAll(() => {
-    // reset router
-    router.currentNodeId_ = undefined;
-  });
+  describe('start()', () => {
+    beforeEach(() => {
+      // re-initialize without registering route callbacks
+      Router.instance_ = null; // reset singleton instance to force creating new instance
+      router = new Router();
+      router.routeTree = testRouteTree.tree;
+    });
 
-  beforeEach(() => {
-    vi.spyOn(router.page, startPropertyName);
-  });
+    it('registers routes and start routing', () => {
+      const initialCallbackLength = router.page.callbacks.length;
+      const builtinCallbackLength = 0;
 
-  it('.start should register routes and start routing', () => {
-    const initialCallbackLength = router.page.callbacks.length;
-    const builtinCallbackLength = 0;
-
-    router.start();
-    // router.page should be called to register routes ROOT, B, C, D, E.
-    // A should NOT be registered as it is abstract (has a zero length path).
-    expect(router.page.callbacks.length).toBe(5 + initialCallbackLength + builtinCallbackLength);
-    expect(router.page.start).toHaveBeenCalled();
-  });
-
-  it('should not have a current route id initially', () => {
-    expect(router.currentNodeId_).toBe(undefined);
-  });
-
-  it('should not have a previous route id initially', () => {
-    expect(router.prevNodeId_).toBe(undefined);
+      vi.spyOn(router.page, startPropertyName);
+      router.start();
+      // router.page should be called to register routes ROOT, B, C, D, E.
+      // A should NOT be registered as it is abstract (has a zero length path).
+      expect(router.page.callbacks.length).toBe(5 + initialCallbackLength + builtinCallbackLength);
+      expect(router.page.start).toHaveBeenCalled();
+    });
   });
 
   it('callbacks should call router.routeChangeCallback_ with the correct this binding and arguments', async () => {
@@ -265,8 +262,6 @@ describe('Router', () => {
       expect(rp instanceof Context);
     });
   });
-
-
 
   describe('query context', () => {
     afterEach(() => {
