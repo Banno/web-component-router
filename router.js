@@ -276,6 +276,7 @@ class Router {
     let routeError;
     try {
       if (!(await routeTreeNode.activate(this.currentNodeId_, context))) {
+        next();
         return;
       }
     } catch (err) {
