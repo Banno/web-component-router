@@ -94,13 +94,6 @@ describe('Router', () => {
     expect(routeChangeCallbackCalled).toBe(true);
   });
 
-  it('should store the previous route id', async () => {
-    await router.go('/B/somedata');
-    await router.go('/C');
-    expect(router.currentNodeId_).toBe(testRouteTree.Id.C);
-    expect(router.prevNodeId_).toBe(testRouteTree.Id.B);
-  });
-
   describe('Router constructor', () => {
     beforeEach(() => {
       // reset singleton instance before each test to prevent tests from affecting each other
@@ -353,6 +346,61 @@ describe('Router', () => {
       A.getValue().element.appendChild(bElement);
       await A.getValue().element.routeExit(B, A, testRouteTree.Id.E, context);
       expect(A.getValue().element.getElementsByTagName(testRouteTree.Id.B).length).toBe(0);
+    });
+  });
+
+  describe('routeChangeCallback_(routeTreeNode, context, next)', () => {
+    beforeEach(async () => {
+      expect(router.currentNodeId_).toBe(testRouteTree.Id.ROOT); // sanity check —- should start at ROOT
+      expect(router.prevNodeId_).toBe(undefined); // sanity check
+    });
+
+    describe('when routeTreeNode.activate() resolves to true', () => {
+      beforeEach(() => {
+        vi.spyOn(B, JSCompiler_renameProperty('activate', RouteTreeNode.prototype)).mockImplementation(async () => true);
+      });
+
+      it('stores the previous route id and updates the current route id', async () => {
+        await router.go('/B/somedata');
+        expect(router.prevNodeId_).toBe(testRouteTree.Id.ROOT);
+        expect(router.currentNodeId_).toBe(testRouteTree.Id.B);
+      });
+    });
+
+    describe('when routeTreeNode.activate() resolves to false (routing stopped)', () => {
+      beforeEach(() => {
+        vi.spyOn(B, JSCompiler_renameProperty('activate', RouteTreeNode.prototype)).mockImplementation(async () => false);
+      });
+
+      it('prevents prevNodeId_ and currentNodeId_ from being updated', async () => {
+        await router.go('/B/somedata');
+        expect(router.prevNodeId_).toBe(undefined); // prevNodeId_ should not update because routing was stopped
+        expect(router.currentNodeId_).toBe(testRouteTree.Id.ROOT); // currentNodeId_ should not update because routing was stopped
+      });
+    });
+
+    describe('when routeTreeNode.activate() throws an error', () => {
+      const error = new Error('test error');
+      beforeEach(() => {
+        vi.spyOn(B, JSCompiler_renameProperty('activate', RouteTreeNode.prototype)).mockImplementation(async () => { throw error });
+      });
+
+      it('updates previous route id and current route id', async () => {
+        await router.go('/B/somedata');
+        expect(router.prevNodeId_).toBe(testRouteTree.Id.ROOT);
+        expect(router.currentNodeId_).toBe(testRouteTree.Id.B);
+      });
+
+      it('should pass the error to route change complete callbacks', async () => {
+        let routeChangeCompleteCallbackCalled = false;
+        const routeChangeCompleteCallback = (err) => {
+          expect(err).toBe(error);
+          routeChangeCompleteCallbackCalled = true;
+        };
+        router.addRouteChangeCompleteCallback(routeChangeCompleteCallback);
+        await router.go('/B/somedata');
+        expect(routeChangeCompleteCallbackCalled).toBe(true);
+      });
     });
   });
 });
