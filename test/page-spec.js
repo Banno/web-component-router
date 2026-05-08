@@ -14,6 +14,10 @@ describe('Page', () => {
     vi.spyOn(Context.prototype, 'pushState');
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   const dispatchPropertyName = JSCompiler_renameProperty('dispatch', Page.prototype);
 
   describe('show(path, state, dispatch = true, push = true)', () => {

@@ -17,17 +17,11 @@ import RoutedElement from './fixtures/custom-fixture.js';
 import {afterEach, beforeEach, describe, expect, vi} from 'vitest';
 import { ROOT, A, B, C, D, E } from './utils/testing-route-setup.js';
 
-function JSCompiler_renameProperty(propName, instance) {
-  return propName;
-}
-
 describe('Router', () => {
   let router;
 
   /** @type {!Function} */
   let newRouteChangeCallback;
-
-  const startPropertyName = JSCompiler_renameProperty('start', Router.prototype.page);
 
   const initRouter = async () => {
     history.pushState({}, '', '/'); // reset URL to prevent page.js from invoking route callbacks on page load
@@ -72,7 +66,7 @@ describe('Router', () => {
       const initialCallbackLength = router.page.callbacks.length;
       const builtinCallbackLength = 0;
 
-      vi.spyOn(router.page, startPropertyName);
+      vi.spyOn(router.page, 'start');
       router.start();
       // router.page should be called to register routes ROOT, B, C, D, E.
       // A should NOT be registered as it is abstract (has a zero length path).
@@ -234,7 +228,7 @@ describe('Router', () => {
 
   describe('go()', () => {
     beforeEach(() => {
-      vi.spyOn(router.page, JSCompiler_renameProperty('show', router.page)).
+      vi.spyOn(router.page, 'show').
         mockImplementation(async (path) => new Context(path));
     });
 
@@ -357,7 +351,7 @@ describe('Router', () => {
 
     describe('when routeTreeNode.activate() resolves to true', () => {
       beforeEach(() => {
-        vi.spyOn(B, JSCompiler_renameProperty('activate', RouteTreeNode.prototype)).mockImplementation(async () => true);
+        vi.spyOn(B, 'activate').mockImplementation(async () => true);
       });
 
       it('stores the previous route id and updates the current route id', async () => {
@@ -369,7 +363,7 @@ describe('Router', () => {
 
     describe('when routeTreeNode.activate() resolves to false (routing stopped)', () => {
       beforeEach(() => {
-        vi.spyOn(B, JSCompiler_renameProperty('activate', RouteTreeNode.prototype)).mockImplementation(async () => false);
+        vi.spyOn(B, 'activate').mockImplementation(async () => false);
       });
 
       it('prevents prevNodeId_ and currentNodeId_ from being updated', async () => {
@@ -382,7 +376,7 @@ describe('Router', () => {
     describe('when routeTreeNode.activate() throws an error', () => {
       const error = new Error('test error');
       beforeEach(() => {
-        vi.spyOn(B, JSCompiler_renameProperty('activate', RouteTreeNode.prototype)).mockImplementation(async () => { throw error });
+        vi.spyOn(B, 'activate').mockImplementation(async () => { throw error });
       });
 
       it('updates previous route id and current route id', async () => {
