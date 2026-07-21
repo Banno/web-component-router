@@ -9,3 +9,33 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
+    groups:
+      prod-security-updates:
+        applies-to: 'security-updates'
+        dependency-type: 'production'
+        group-by: 'dependency-name'
+        patterns:
+          - '*'
+        update-types: ['minor', 'patch']
+      dev-security-updates:
+        applies-to: 'security-updates'
+        dependency-type: 'development'
+        group-by: 'dependency-name'
+        patterns:
+          - '*'
+        update-types: ['minor', 'patch']
+      build-dependencies:
+        applies-to: 'version-updates'
+        patterns:
+          - '@types/*'
+          - typescript
+        update-types: ['major', 'minor', 'patch']
+      test-dependencies:
+        applies-to: 'version-updates'
+        patterns:
+          - '@vitest/*'
+          - playwright
+          - vitest*
+        update-types: ['major', 'minor', 'patch']
