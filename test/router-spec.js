@@ -16,10 +16,6 @@ import Router, {Context, RouteTreeNode} from '../router.js';
 import RoutedElement from './fixtures/custom-fixture.js';
 import {vi} from 'vitest';
 
-function JSCompiler_renameProperty(propName, instance) {
-  return propName;
-}
-
 describe('Router', () => {
   beforeEach(() => {
     Router.instance_ = null;
@@ -28,6 +24,7 @@ describe('Router', () => {
   afterAll(() => {
     Router.instance_ = null;
   });
+
   let router = new Router();
 
   const A = testRouteTree.tree.getNodeByKey(testRouteTree.Id.A);
@@ -37,7 +34,6 @@ describe('Router', () => {
   /** @type {!Function} */
   let newRouteChangeCallback;
 
-  const startPropertyName = JSCompiler_renameProperty('start', router.page);
 
   beforeAll(() => {
     // reset router
@@ -62,10 +58,11 @@ describe('Router', () => {
   });
 
   beforeEach(() => {
-    vi.spyOn(router.page, startPropertyName);
+    vi.spyOn(router.page, 'start');
   });
 
-  it('.start should register routes and start routing', () => {
+
+  it('.start() should register routes and start routing', () => {
     const initialCallbackLength = router.page.callbacks.length;
     const builtinCallbackLength = 0;
 
@@ -77,7 +74,7 @@ describe('Router', () => {
   });
 
   it('should not have a previous route id initially', () => {
-    expect(router.currentNodeId_).toBe(undefined);
+    expect(router.prevNodeId_).toBe(undefined);
   });
 
   it('callbacks should call router.routeChangeCallback_ with the correct this binding and arguments', async () => {
@@ -224,7 +221,7 @@ describe('Router', () => {
 
   describe('go()', () => {
     beforeEach(() => {
-      vi.spyOn(router.page, JSCompiler_renameProperty('show', router.page)).
+      vi.spyOn(router.page, 'show').
         mockImplementation(async (path) => new Context(path));
     });
 
