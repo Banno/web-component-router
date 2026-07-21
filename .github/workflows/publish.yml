@@ -11,6 +11,7 @@ jobs:
     permissions:
       id-token: write  # Required for OIDC
       contents: read
+      issues: write
     runs-on: ubuntu-latest
     env:
       FORCE_COLOR: '1'
