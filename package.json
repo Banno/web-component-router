@@ -36,11 +36,11 @@
     "path-to-regexp": "^6.3.0"
   },
   "devDependencies": {
-    "@types/node": "^24.5.2",
+    "@types/node": "^25.2.3",
     "@vitest/browser": "^4.0.6",
     "@vitest/browser-playwright": "^4.0.6",
     "lit": "^3.1.1",
-    "playwright": "1.56.1",
+    "playwright": "1.58.2",
     "rimraf": "^6.0.1",
     "typescript": "^5.9.3",
     "vitest": "^4.0.6",
