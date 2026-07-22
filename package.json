@@ -18,6 +18,8 @@
     "clean": "rimraf ./lib/**/*.d.ts ./*.d.ts ./lib/*.mixin.js --glob",
     "prepublish": "yarn clean && yarn build",
     "pretest": "playwright install",
+    "prepare": "husky",
+    "release:ci": "HUSKY=0 semantic-release",
     "test": "vitest"
   },
   "repository": {
@@ -33,18 +35,24 @@
   "dependencies": {
     "path-to-regexp": "^6.3.0"
   },
-  "resolutions": {
-    "@types/node": "^18.11.18"
-  },
   "devDependencies": {
     "@types/node": "^25.2.3",
-    "@vitest/browser": "^4.1.0",
-    "@vitest/browser-playwright": "^4.1.0",
+    "@vitest/browser": "^4.1.10",
+    "@vitest/browser-playwright": "^4.1.10",
     "lit": "^3.1.1",
     "playwright": "1.61.1",
     "rimraf": "^6.0.1",
     "typescript": "^5.9.3",
-    "vitest": "^4.1.0"
+    "vitest": "^4.1.10",
+    "@commitlint/cli": "^21.2.1",
+    "@commitlint/config-conventional": "^21.2.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^12.0.9",
+    "@semantic-release/npm": "^13.1.5",
+    "husky": "^9.1.7",
+    "semantic-release": "^25.0.8",
+    "vite": "^7.3.6"
   },
   "packageManager": "yarn@1.22.22"
 }
