@@ -52,7 +52,7 @@
     "@semantic-release/npm": "^13.1.5",
     "husky": "^9.1.7",
     "semantic-release": "^25.0.8",
-    "vite": "^7.3.6"
+    "vite": "^8.1.5"
   },
   "packageManager": "yarn@1.22.22"
 }
