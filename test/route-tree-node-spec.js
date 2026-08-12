@@ -14,7 +14,7 @@
 import testRouteTree from './utils/testing-route-setup.js';
 import { describe, it, expect, vi } from 'vitest';
 import RouteTreeNode from '../lib/route-tree-node.js';
-import { loadRouteNode } from '../lib/route-change-handlers.js';
+import { loadRouteNode, removeRouteNode } from '../lib/route-change-handlers.js';
 import {Context} from '../router.js';
 
 describe('RouteTreeNode', () => {
@@ -109,6 +109,64 @@ describe('RouteTreeNode', () => {
 
       await A.activate(undefined, new Context('/A'));
       expect(loadRouteNode).toHaveBeenCalled();
+    });
+  });
+
+  describe('exiting a node whose element is already gone', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+      ROOT.getValue().element = new RoutedElement('ROOT');
+      A.getValue().element = new RoutedElement('A');
+      B.getValue().element = new RoutedElement('B');
+      C.getValue().element = new RoutedElement('C');
+      D.getValue().element = new RoutedElement('D');
+      E.getValue().element = new RoutedElement('E');
+      routePath = [];
+    });
+
+    it('exiting the same node twice without an entry between is a no-op, not a throw', async () => {
+      await C.activate(B.getKey(), new Context('/C'));
+      expect(routePath.join('_')).toBe('B-exit_ROOT-enter_A-enter_C-enter');
+      // The first exit cleared B's element and only an entry repopulates it.
+      expect(B.getValue().element).toBeUndefined();
+
+      routePath = [];
+      await C.activate(B.getKey(), new Context('/C'));
+      expect(routePath.join('_')).toBe('ROOT-enter_A-enter_C-enter');
+      expect(removeRouteNode).not.toHaveBeenCalled();
+    });
+
+    it('awaits routeExit once with the node, next exit node, route id and context', async () => {
+      const routeExit = vi.spyOn(B.getValue().element, 'routeExit');
+      const context = new Context('/D/E');
+
+      await E.activate(B.getKey(), context);
+
+      expect(routeExit).toHaveBeenCalledTimes(1);
+      expect(routeExit).toHaveBeenCalledWith(B, A, E.getKey(), context);
+    });
+
+    it('still falls back to removeRouteNode when a live element has no routeExit', async () => {
+      B.getValue().element.routeExit = undefined;
+
+      await C.activate(B.getKey(), new Context('/C'));
+
+      expect(removeRouteNode).toHaveBeenCalledTimes(1);
+      expect(removeRouteNode).toHaveBeenCalledWith(B);
+      expect(B.getValue().element).toBeUndefined();
+    });
+
+    it('exits a multi-node path in order', async () => {
+      await E.activate(B.getKey(), new Context('/D/E'));
+      expect(routePath.join('_')).toBe('B-exit_A-exit_ROOT-enter_D-enter_E-enter');
+    });
+
+    it('skips only the node already exited and keeps the order of the rest', async () => {
+      B.getValue().element = undefined;
+
+      await E.activate(B.getKey(), new Context('/D/E'));
+
+      expect(routePath.join('_')).toBe('A-exit_ROOT-enter_D-enter_E-enter');
     });
   });
 });
