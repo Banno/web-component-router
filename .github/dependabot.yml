@@ -32,6 +32,15 @@ updates:
           - '@types/*'
           - typescript
         update-types: ['major', 'minor', 'patch']
+      dev-dependencies:
+        applies-to: 'version-updates'
+        patterns:
+          - '@semantic-release/*'
+          - '@commitlint/*'
+          - husky
+          - semantic-release
+          - rimraf
+        update-types: ['major', 'minor', 'patch']
       test-dependencies:
         applies-to: 'version-updates'
         patterns:
