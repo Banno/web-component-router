@@ -40,7 +40,7 @@
     "@vitest/browser": "^4.1.10",
     "@vitest/browser-playwright": "^4.1.10",
     "lit": "^3.1.1",
-    "playwright": "1.61.1",
+    "playwright": "1.62.1",
     "rimraf": "^6.0.1",
     "typescript": "^5.9.3",
     "vitest": "^4.1.10",
