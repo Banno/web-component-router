@@ -38,6 +38,14 @@ class SectionA1Route extends routingMixin(LitElement) {
     this.activeRouteId = routeId;
   }
 
+  async routeExit(currentNode, nextNode, routeId, context) {
+    // Demonstrate custom handling of route exit by asking the user to confirm leaving the route.
+    if (!confirm('Are you sure you want to leave this route?')) {
+      return false;
+    }
+    await super.routeExit(currentNode, nextNode, routeId, context);
+  }
+
   render() {
     return html`
       <h1>Section A1</h1>

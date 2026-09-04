@@ -14,88 +14,84 @@ import testRouteTree from './utils/testing-route-setup.js';
 import testRouteConfig from './utils/test-route-config.js';
 import Router, {Context, RouteTreeNode} from '../router.js';
 import RoutedElement from './fixtures/custom-fixture.js';
-import {vi} from 'vitest';
+import {afterEach, beforeEach, describe, expect, vi} from 'vitest';
+import { ROOT, A, B, C, D, E } from './utils/testing-route-setup.js';
 
 describe('Router', () => {
-  beforeEach(() => {
-    Router.instance_ = null;
-  });
+  let router;
 
-  afterAll(() => {
-    Router.instance_ = null;
-  });
-
-  let router = new Router();
-
-  const A = testRouteTree.tree.getNodeByKey(testRouteTree.Id.A);
-  const B = testRouteTree.tree.getNodeByKey(testRouteTree.Id.B);
-
-  const originalRouteChangeCallback = router.routeChangeCallback_;
   /** @type {!Function} */
   let newRouteChangeCallback;
 
-
-  beforeAll(() => {
-    // reset router
+  const initRouter = async () => {
+    history.pushState({}, '', '/'); // reset URL to prevent page.js from invoking route callbacks on page load
+    Router.instance_ = null; // reset singleton instance to force creating new instance
+    newRouteChangeCallback = undefined; // reset newRouteChangeCallback to prevent tests from affecting each other
+    router = new Router();
     router.routeTree = testRouteTree.tree;
-
     router.routeChangeCallback_ = (function(...args) {
-      originalRouteChangeCallback.apply(this, args);
+      Router.prototype.routeChangeCallback_.apply(this, args);
       if (newRouteChangeCallback) {
         newRouteChangeCallback.apply(this, args);
       }
     }).bind(router);
 
+    // should start with no current or previous route
+    expect(router.prevNodeId_).toBe(undefined); // sanity check
+    expect(router.currentNodeId_).toBe(undefined); // sanity check
+
+    await router.start();
     router.page.register('*', (context, next) => {
       context.handled = true; // prevents actually leaving the page
       next();
     });
+
+    expect(router.prevNodeId_).toBe(undefined); // sanity check
+    expect(router.currentNodeId_).toBe(testRouteTree.Id.ROOT); // sanity check
+  };
+
+  beforeEach(async () => {
+    await initRouter();
   });
 
-  afterAll(() => {
-    // reset router
-    router.currentNodeId_ = undefined;
-  });
+  describe('start()', () => {
+    beforeEach(() => {
+      // re-initialize without registering route callbacks
+      Router.instance_ = null; // reset singleton instance to force creating new instance
+      router = new Router();
+      router.routeTree = testRouteTree.tree;
+    });
 
-  beforeEach(() => {
-    vi.spyOn(router.page, 'start');
-  });
+    it('registers routes and start routing', () => {
+      const initialCallbackLength = router.page.callbacks.length;
+      const builtinCallbackLength = 0;
 
-
-  it('.start() should register routes and start routing', () => {
-    const initialCallbackLength = router.page.callbacks.length;
-    const builtinCallbackLength = 0;
-
-    router.start();
-    // router.page should be called to register routes ROOT, B, C, D, E.
-    // A should NOT be registered as it is abstract (has a zero length path).
-    expect(router.page.callbacks.length).toBe(5 + initialCallbackLength + builtinCallbackLength);
-    expect(router.page.start).toHaveBeenCalled();
-  });
-
-  it('should not have a previous route id initially', () => {
-    expect(router.prevNodeId_).toBe(undefined);
+      vi.spyOn(router.page, 'start');
+      router.start();
+      // router.page should be called to register routes ROOT, B, C, D, E.
+      // A should NOT be registered as it is abstract (has a zero length path).
+      expect(router.page.callbacks.length).toBe(5 + initialCallbackLength + builtinCallbackLength);
+      expect(router.page.start).toHaveBeenCalled();
+    });
   });
 
   it('callbacks should call router.routeChangeCallback_ with the correct this binding and arguments', async () => {
+    let routeChangeCallbackCalled = false;
     newRouteChangeCallback = (function(node, ...args) {
       expect(args.length).toBe(2);
       expect(this instanceof router.constructor).toBe(true);
       expect(node instanceof RouteTreeNode).toBe(true);
-
+      routeChangeCallbackCalled = true;
     }).bind(router);
 
-    router.go('/B/somedata');
-  });
-
-  it('should store the previous route id', () => {
-    expect(router.currentNodeId_).toBe(testRouteTree.Id.B);
+    await router.go('/B/somedata');
+    expect(routeChangeCallbackCalled).toBe(true);
   });
 
   describe('Router constructor', () => {
-    afterAll(() => {
-      // reset routeTree
-      router = new Router();
+    beforeEach(() => {
+      // reset singleton instance before each test to prevent tests from affecting each other
+      Router.instance_ = null;
     });
 
     it('should leave the routeTree undefined if instantiated without a route configuration', () => {
@@ -106,6 +102,17 @@ describe('Router', () => {
     it('should create the routeTree when instantiated with the route configuration', () => {
       router = new Router(testRouteConfig);
       expect(router.routeTree).not.toBe(undefined);
+    });
+
+    it('sets singleton instance', () => {
+      router = new Router();
+      expect(Router.instance_).toBe(router);
+    });
+
+    it('returns the singleton instance if the constructor is called multiple times', () => {
+      const router1 = new Router();
+      const router2 = new Router();
+      expect(router1).toBe(router2);
     });
   });
 
@@ -243,30 +250,22 @@ describe('Router', () => {
     });
   });
 
-
-
   describe('query context', () => {
     afterEach(() => {
       // Remove the callback added in the test.
       router.page.callbacks.pop();
     });
 
-    it('should be an empty object if there are no query parameters', (done) => {
-      router.page.register('/test', (context, next) => {
-        expect(context.query).toBeInstanceOf(URLSearchParams);
-        expect(Array.from(context.query.keys())).toEqual([]);
-        done();
-      });
-      router.go('/test');
+    it('should be an empty object if there are no query parameters', async () => {
+      const context = await router.go('/test');
+      expect(context.query).toBeInstanceOf(URLSearchParams);
+      expect(Array.from(context.query.keys())).toEqual([]);
     });
 
-    it('should have properties that match the query parameters', (done) => {
-      router.page.register('/test', (context, next) => {
-        expect(context.query.get('foo')).toBe('bar');
-        expect(context.query.get('noValue')).toBe('');
-        done();
-      });
-      router.go('/test?foo=bar&noValue');
+    it('should have properties that match the query parameters', async () => {
+      const context = await router.go('/test?foo=bar&noValue');
+      expect(context.query.get('foo')).toBe('bar');
+      expect(context.query.get('noValue')).toBe('');
     });
   });
 
@@ -341,6 +340,61 @@ describe('Router', () => {
       A.getValue().element.appendChild(bElement);
       await A.getValue().element.routeExit(B, A, testRouteTree.Id.E, context);
       expect(A.getValue().element.getElementsByTagName(testRouteTree.Id.B).length).toBe(0);
+    });
+  });
+
+  describe('routeChangeCallback_(routeTreeNode, context, next)', () => {
+    beforeEach(async () => {
+      expect(router.currentNodeId_).toBe(testRouteTree.Id.ROOT); // sanity check —- should start at ROOT
+      expect(router.prevNodeId_).toBe(undefined); // sanity check
+    });
+
+    describe('when routeTreeNode.activate() resolves to true', () => {
+      beforeEach(() => {
+        vi.spyOn(B, 'activate').mockImplementation(async () => true);
+      });
+
+      it('stores the previous route id and updates the current route id', async () => {
+        await router.go('/B/somedata');
+        expect(router.prevNodeId_).toBe(testRouteTree.Id.ROOT);
+        expect(router.currentNodeId_).toBe(testRouteTree.Id.B);
+      });
+    });
+
+    describe('when routeTreeNode.activate() resolves to false (routing stopped)', () => {
+      beforeEach(() => {
+        vi.spyOn(B, 'activate').mockImplementation(async () => false);
+      });
+
+      it('prevents prevNodeId_ and currentNodeId_ from being updated', async () => {
+        await router.go('/B/somedata');
+        expect(router.prevNodeId_).toBe(undefined); // prevNodeId_ should not update because routing was stopped
+        expect(router.currentNodeId_).toBe(testRouteTree.Id.ROOT); // currentNodeId_ should not update because routing was stopped
+      });
+    });
+
+    describe('when routeTreeNode.activate() throws an error', () => {
+      const error = new Error('test error');
+      beforeEach(() => {
+        vi.spyOn(B, 'activate').mockImplementation(async () => { throw error });
+      });
+
+      it('updates previous route id and current route id', async () => {
+        await router.go('/B/somedata');
+        expect(router.prevNodeId_).toBe(testRouteTree.Id.ROOT);
+        expect(router.currentNodeId_).toBe(testRouteTree.Id.B);
+      });
+
+      it('should pass the error to route change complete callbacks', async () => {
+        let routeChangeCompleteCallbackCalled = false;
+        const routeChangeCompleteCallback = (err) => {
+          expect(err).toBe(error);
+          routeChangeCompleteCallbackCalled = true;
+        };
+        router.addRouteChangeCompleteCallback(routeChangeCompleteCallback);
+        await router.go('/B/somedata');
+        expect(routeChangeCompleteCallbackCalled).toBe(true);
+      });
     });
   });
 });

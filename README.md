@@ -191,8 +191,10 @@ required.
 
 ## Creating Routing Enabled Components
 
-Components used with the router do not need to handle routeEnter and routeExit, but may take action at these lifecycle events by extending the routingMixin and overriding these methods.
-When using these methods, to continue routing you must use a super call to the base method (demonstrated below).
+Components used with the router do not need to handle `routeEnter()` and `routeExit()`, but may take action at these lifecycle events by extending the `routingMixin` and overriding these methods.
+When using these methods, to continue routing you must use a super call to the base method (demonstrated below). If a previous node's `routeExit()` or the new node's `routeEnter()` method returns `false`, the routing is halted and state is not pushed.
+
+_Note: In order to cancel routing on route entry, it must be canceled at the base route's `routeEnter()`; otherwise, state will already have been pushed and the element will already have been added to the DOM._
 
 ```js
 class MyElement extends routingMixin(HTMLElement) {
@@ -202,6 +204,7 @@ class MyElement extends routingMixin(HTMLElement) {
    * is shared between the old and new routes, the element
    * will be re-used but have attributes updated here.
    *
+   * @override
    * @param {!RouteTreeNode} currentNode
    * @param {!RouteTreeNode|undefined} nextNodeIfExists - the
    *     child node of this route.
@@ -223,10 +226,12 @@ class MyElement extends routingMixin(HTMLElement) {
    * This method is ONLY called if this element is not being
    * used by the next route destination.
    *
+   * @override
    * @param {!RouteTreeNode} currentNode
    * @param {!RouteTreeNode|undefined} nextNode - parent node
    * @param {string} routeId - unique name of the route
    * @param {!Context} context - page.js Context object
+   * @return {!Promise<boolean=>}
    */
   async routeExit(currentNode, nextNode, routeId, context) {
     const currentElement = currentNode.getValue().element;
@@ -240,7 +245,7 @@ class MyElement extends routingMixin(HTMLElement) {
 ```
 
 Two mixins are provided to make this easy. When
-using the mixin, `routeEnter` and `routeExit` methods are only need defined
+using the mixin, `routeEnter()` and `routeExit()` methods only need to be defined
 when the default behavior needs modified. In most cases any overridden
 method should do minimal work and call `super.routeEnter` or `super.routeExit`.
 
