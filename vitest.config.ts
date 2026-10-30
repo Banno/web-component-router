@@ -2,9 +2,8 @@ import { defineConfig } from 'vite';
 import {playwright} from '@vitest/browser-playwright';
 
 export default defineConfig((env) => ({
-  cacheDir: '.vitest/web-component-router',
   build: {},
-  optimzeDeps: {
+  optimizeDeps: {
     include: ['path-to-regexp'],
   },
   test: {
