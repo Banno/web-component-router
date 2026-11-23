@@ -198,4 +198,68 @@ describe('Page', () => {
       });
     });
   });
+
+  describe('unhandled route', () => {
+    beforeEach(() => {
+      page.configure();
+      page._running = true;
+    });
+
+    afterEach(() => {
+      page.stop();
+    });
+
+    it('keeps the router running when an unmatched path is another origin', async () => {
+      const stop = vi.spyOn(page, 'stop');
+      const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const href = window.location.href;
+
+      await page.show('//evil.example');
+
+      expect(stop).not.toHaveBeenCalled();
+      expect(page._running).toBe(true);
+      expect(window.location.href).toBe(href);
+      expect(error).toHaveBeenCalledWith('Cross domain route change prevented');
+    });
+
+    it('keeps the router running when an unmatched path uses a backslash authority', async () => {
+      const stop = vi.spyOn(page, 'stop');
+      const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const href = window.location.href;
+
+      await page.show('/\\evil.example');
+
+      expect(stop).not.toHaveBeenCalled();
+      expect(page._running).toBe(true);
+      expect(window.location.href).toBe(href);
+      expect(error).toHaveBeenCalledWith('Cross domain route change prevented');
+    });
+
+    it('stops the router before navigating to an unmatched same-origin path', async () => {
+      const assigned = [];
+      const realWindow = page._window;
+      page._window = {
+        document: realWindow.document,
+        location: {
+          pathname: '/current',
+          search: '',
+          hash: '',
+          origin: realWindow.location.origin,
+          set href(value) {
+            assigned.push(value);
+          },
+          get href() {
+            return assigned.at(-1) || realWindow.location.href;
+          },
+        },
+        addEventListener: realWindow.addEventListener.bind(realWindow),
+        removeEventListener: realWindow.removeEventListener.bind(realWindow),
+      };
+
+      await page.show('/missing');
+
+      expect(page._running).toBe(false);
+      expect(assigned).toEqual([new URL('/missing', realWindow.location.origin).toString()]);
+    });
+  });
 });
