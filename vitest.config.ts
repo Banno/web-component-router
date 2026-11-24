@@ -3,9 +3,6 @@ import {playwright} from '@vitest/browser-playwright';
 
 export default defineConfig((env) => ({
   build: {},
-  optimizeDeps: {
-    include: ['path-to-regexp'],
-  },
   test: {
     include: ["test/**/*-spec.js"],
     browser: {

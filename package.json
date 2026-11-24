@@ -32,9 +32,6 @@
     "url": "https://github.com/Banno/web-component-router/issues"
   },
   "homepage": "https://github.com/Banno/web-component-router",
-  "dependencies": {
-    "path-to-regexp": "^6.3.0"
-  },
   "devDependencies": {
     "@types/node": "^26.6.2",
     "@vitest/browser": "^5.0.5",
