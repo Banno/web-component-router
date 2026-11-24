@@ -2,3 +2,4 @@ node_modules
 yarn-error.log
 *.d.ts
 !types/index.d.ts
+.vitest

@@ -21,6 +21,33 @@ In the /demo directory, run `yarn && yarn dev` to see the router in a basic appl
 npm install @jack-henry/web-component-router
 ```
 
+## Browser Support
+
+Route paths are matched with the browser's built-in
+[`URLPattern`](https://developer.mozilla.org/en-US/docs/Web/API/URLPattern) API,
+available in Chrome and Edge 95+, Safari 17.4+, and Firefox 142+.
+
+## Route Path Syntax
+
+Route paths use the `URLPattern` pathname syntax, for example `/users/:userId([0-9]{1,6})`,
+`/pay/:mode(bill|person)?` and `/files/:path*`.
+
+Custom regular expression groups are compiled by the browser with the `v` flag, which is
+stricter than ordinary JavaScript regular expressions. A `-` inside a character class must be escaped:
+
+```js
+'/account/:accountId([-a-fA-F0-9]{36})'    // throws when the route is created
+'/account/:accountId([a-fA-F0-9\\-]{36})'   // correct
+```
+
+Other matching rules:
+
+- Matching is case insensitive unless `sensitive: true` is passed to `Route`.
+- A trailing slash on the url is optional unless the page is strict (`page.strict(true)`).
+- Parameter values are percent-decoded once, after matching. An encoded slash (`%2F`) is
+  part of a single parameter value.
+- `Route#pattern` is the compiled `URLPattern`.
+
 ## Defining Routes
 
 The router uses [Page.js](https://visionmedia.github.io/page.js/) internally
